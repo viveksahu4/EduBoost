@@ -4,7 +4,7 @@
 
 EduBoost is an ASP.NET Core MVC (.NET 10) platform built with Entity Framework Core, SQL Server LocalDB, ASP.NET Core Identity, OpenAPI/Swagger, and Google Gemini / Anthropic Claude AI integrations. Teachers record students and assessment marks; the system calculates a weighted risk score, flags slow learners, recommends VARK-matched innovative teaching methods, provides a 24/7 AI Teaching Assistant chatbot, and generates personalized 4-week remedial plans.
 
-> For full architecture diagrams, service internals, and developer guides, see [DOCUMENTATION.md](DOCUMENTATION.md) or visit `/Documentation` inside the running app.
+> For full architecture diagrams, service internals, and developer guides, see [DOCUMENTATION.md](DOCUMENTATION.md) or visit `/Documentation` inside the running app..
 
 ## Requirements
 
