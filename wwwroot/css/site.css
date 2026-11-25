@@ -684,7 +684,7 @@ body.sidebar-collapsed .app-main {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .topbar-actions .icon-btn {
@@ -708,6 +708,8 @@ body.sidebar-collapsed .app-main {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
+  margin: 0 auto;
   padding: 6px 12px;
   height: 40px;
   border: 1px solid var(--border);
