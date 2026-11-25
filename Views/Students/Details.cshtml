@@ -1,0 +1,263 @@
+@model EduBoost.Models.Student
+@{
+    ViewData["Title"] = Model.FullName;
+    var average = Model.Assessments.Any() ? Model.Assessments.Average(a => a.Percentage) : 0;
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div>
+        <h1 class="h3 mb-1">@Model.FullName</h1>
+        <p class="text-muted mb-0">Roll @Model.RollNo &middot; Class @Model.ClassName</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-primary" asp-controller="RemedialPlans" asp-action="Create" asp-route-studentId="@Model.Id">+ Remedial plan</a>
+        <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+        <a class="btn btn-outline-secondary" asp-action="Index">Back to list</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+        <div class="card h-100"><div class="card-body">
+            <div class="text-muted small text-uppercase">Attendance</div>
+            <div class="fs-3 fw-semibold">@Model.AttendancePercent.ToString("0.#")%</div>
+        </div></div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card h-100"><div class="card-body">
+            <div class="text-muted small text-uppercase">Average score</div>
+            <div class="fs-3 fw-semibold">@average.ToString("0.#")%</div>
+        </div></div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card h-100"><div class="card-body">
+            <div class="text-muted small text-uppercase">Risk score</div>
+            <div class="fs-3 fw-semibold @(Model.RiskScore >= 45 ? "text-danger" : "text-success")">@Model.RiskScore.ToString("0.0")</div>
+        </div></div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card h-100"><div class="card-body">
+            <div class="text-muted small text-uppercase">Status</div>
+            <div class="fs-5 fw-semibold">
+                @if (Model.IsSlowLearner)
+                {
+                    <span class="badge bg-danger">Needs support</span>
+                }
+                else
+                {
+                    <span class="badge bg-success">On track</span>
+                }
+            </div>
+        </div></div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-semibold">Assessments</span>
+                <a class="btn btn-sm btn-outline-primary" asp-controller="Assessments" asp-action="Create" asp-route-studentId="@Model.Id">Add assessment</a>
+            </div>
+            @if (!Model.Assessments.Any())
+            {
+                <div class="card-body text-muted">No assessments recorded yet.</div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0 align-middle">
+                        <thead><tr><th>Exam</th><th>Subject</th><th>Date</th><th>Marks</th><th>%</th></tr></thead>
+                        <tbody>
+                        @foreach (var a in Model.Assessments.OrderByDescending(a => a.ExamDate))
+                        {
+                            <tr>
+                                <td>@a.ExamType</td>
+                                <td>@a.Subject?.Name</td>
+                                <td>@a.ExamDate.ToString("dd MMM yyyy")</td>
+                                <td>@a.MarksObtained.ToString("0.#") / @a.MaxMarks.ToString("0.#")</td>
+                                <td>
+                                    <span class="badge @(a.Percentage < 40 ? "bg-danger" : a.Percentage < 60 ? "bg-warning text-dark" : "bg-success")">
+                                        @a.Percentage.ToString("0.#")
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header fw-semibold">Remedial plans</div>
+            @if (!Model.RemedialPlans.Any())
+            {
+                <div class="card-body text-muted">No remedial plans yet.</div>
+            }
+            else
+            {
+                <ul class="list-group list-group-flush">
+                @foreach (var plan in Model.RemedialPlans.OrderByDescending(p => p.StartDate))
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-semibold">@plan.Title</div>
+                            <div class="small text-muted">@plan.Subject?.Name &middot; started @plan.StartDate.ToString("dd MMM yyyy")</div>
+                        </div>
+                        <div class="d-flex gap-2 align-items-center">
+                            <span class="badge @(plan.Status == "Completed" ? "bg-success" : "bg-primary")">@plan.Status</span>
+                            <a class="btn btn-sm btn-outline-secondary" asp-controller="RemedialPlans" asp-action="Details" asp-route-id="@plan.Id">Open</a>
+                        </div>
+                    </li>
+                }
+                </ul>
+            }
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header fw-semibold">Student information</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Roll number</dt><dd class="col-sm-7">@Model.RollNo</dd>
+                    <dt class="col-sm-5">Class</dt><dd class="col-sm-7">@Model.ClassName</dd>
+                    <dt class="col-sm-5">Parent email</dt><dd class="col-sm-7">@(string.IsNullOrWhiteSpace(Model.ParentEmail) ? "-" : Model.ParentEmail)</dd>
+                    <dt class="col-sm-5">Learning style</dt><dd class="col-sm-7">@Model.LearningStyle</dd>
+                    <dt class="col-sm-5">Last quiz style</dt><dd class="col-sm-7">@(Context.Session.GetString("LastStyle") ?? "-")</dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-semibold">VARK Diagnostic Assessment</span>
+                <span class="badge bg-primary">Pedagogical Tool</span>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small">
+                    Complete this 4-scenario questionnaire to diagnose the student's dominant learning style (Visual, Auditory, Reading/Writing, or Kinesthetic).
+                </p>
+
+                <form asp-action="StyleQuiz" method="post" id="varkQuizForm">
+                    <input type="hidden" name="studentId" value="@Model.Id" />
+                    <input type="hidden" id="visualScore" name="visual" value="0" />
+                    <input type="hidden" id="auditoryScore" name="auditory" value="0" />
+                    <input type="hidden" id="readingScore" name="reading" value="0" />
+                    <input type="hidden" id="kinestheticScore" name="kinesthetic" value="0" />
+
+                    <!-- Question 1 -->
+                    <div class="mb-3 p-2 rounded bg-light border">
+                        <label class="form-label fw-semibold small mb-1">1. When introducing a complex new topic, the student engages best with:</label>
+                        <div class="form-check small">
+                            <input class="form-check-input vark-opt" type="radio" name="q1" value="Visual" id="q1_v" checked>
+                            <label class="form-check-label" for="q1_v">Diagrams, mind maps, and illustrated slides</label>
+                        </div>
+                        <div class="form-check small">
+                            <input class="form-check-input vark-opt" type="radio" name="q1" value="Auditory" id="q1_a">
+                            <label class="form-check-label" for="q1_a">Oral explanations and interactive discussion</label>
+                        </div>
+                        <div class="form-check small">
+                            <input class="form-check-input vark-opt" type="radio" name="q1" value="Reading" id="q1_r">
+                            <label class="form-check-label" for="q1_r">Textbook readings, articles, and written summaries</label>
+                        </div>
+                        <div class="form-check small">
+                            <input class="form-check-input vark-opt" type="radio" name="q1" value="Kinesthetic" id="q1_k">
+                            <label class="form-check-label" for="q1_k">Hands-on practice, experiments, and model building</label>
+                        </div>
+                    </div>
+
+                    <!-- Question 2 -->
+                    <div class="mb-3 p-2 rounded bg-light border">
+                        <label class="form-label fw-semibold small mb-1">2. When preparing for an upcoming assessment, the student relies on:</label>
+                        <div class="form-check small">
+                            <input class="form-check-input vark-opt" type="radio" name="q2" value="Visual" id="q2_v">
+                            <label class="form-check-label" for="q2_v">Color-coded notes, flashcards, and charts</label>
+                        </div>
+                        <div class="form-check small">
+                            <input class="form-check-input vark-opt" type="radio" name="q2" value="Auditory" id="q2_a" checked>
+                            <label class="form-check-label" for="q2_a">Explaining concepts aloud to peers or study partners</label>
+                        </div>
+                        <div class="form-check small">
+                            <input class="form-check-input vark-opt" type="radio" name="q2" value="Reading" id="q2_r">
+                            <label class="form-check-label" for="q2_r">Making written lists and re-reading chapter summaries</label>
+                        </div>
+                        <div class="form-check small">
+                            <input class="form-check-input vark-opt" type="radio" name="q2" value="Kinesthetic" id="q2_k">
+                            <label class="form-check-label" for="q2_k">Solving practice test papers and mock problems</label>
+                        </div>
+                    </div>
+
+                    <!-- Question 3 -->
+                    <div class="mb-3 p-2 rounded bg-light border">
+                        <label class="form-label fw-semibold small mb-1">3. In remedial sessions, what captures their attention quickest?</label>
+                        <div class="form-check small">
+                            <input class="form-check-input vark-opt" type="radio" name="q3" value="Visual" id="q3_v">
+                            <label class="form-check-label" for="q3_v">Infographics, animations, and video explanations</label>
+                        </div>
+                        <div class="form-check small">
+                            <input class="form-check-input vark-opt" type="radio" name="q3" value="Auditory" id="q3_a">
+                            <label class="form-check-label" for="q3_a">Guided verbal Q&A with the teacher</label>
+                        </div>
+                        <div class="form-check small">
+                            <input class="form-check-input vark-opt" type="radio" name="q3" value="Reading" id="q3_r" checked>
+                            <label class="form-check-label" for="q3_r">Structured revision worksheets and reading notes</label>
+                        </div>
+                        <div class="form-check small">
+                            <input class="form-check-input vark-opt" type="radio" name="q3" value="Kinesthetic" id="q3_k">
+                            <label class="form-check-label" for="q3_k">Gamified challenges and quiz competitions</label>
+                        </div>
+                    </div>
+
+                    <!-- Question 4 -->
+                    <div class="mb-3 p-2 rounded bg-light border">
+                        <label class="form-label fw-semibold small mb-1">4. When stuck on a difficult question, the student usually:</label>
+                        <div class="form-check small">
+                            <input class="form-check-input vark-opt" type="radio" name="q4" value="Visual" id="q4_v">
+                            <label class="form-check-label" for="q4_v">Draws a sketch or diagram to visualize the solution</label>
+                        </div>
+                        <div class="form-check small">
+                            <input class="form-check-input vark-opt" type="radio" name="q4" value="Auditory" id="q4_a">
+                            <label class="form-check-label" for="q4_a">Talks through each step out loud</label>
+                        </div>
+                        <div class="form-check small">
+                            <input class="form-check-input vark-opt" type="radio" name="q4" value="Reading" id="q4_r">
+                            <label class="form-check-label" for="q4_r">Searches the textbook or reference guide</label>
+                        </div>
+                        <div class="form-check small">
+                            <input class="form-check-input vark-opt" type="radio" name="q4" value="Kinesthetic" id="q4_k" checked>
+                            <label class="form-check-label" for="q4_k">Tries trial-and-error examples until it works</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100" id="btnDiagnose">
+                        Diagnose & Save Learning Style
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var form = document.getElementById('varkQuizForm');
+                if (!form) return;
+
+                form.addEventListener('submit', function () {
+                    var counts = { Visual: 0, Auditory: 0, Reading: 0, Kinesthetic: 0 };
+                    var checked = form.querySelectorAll('.vark-opt:checked');
+                    checked.forEach(function (radio) {
+                        if (counts.hasOwnProperty(radio.value)) {
+                            counts[radio.value] += 1;
+                        }
+                    });
+
+                    document.getElementById('visualScore').value = counts.Visual;
+                    document.getElementById('auditoryScore').value = counts.Auditory;
+                    document.getElementById('readingScore').value = counts.Reading;
+                    document.getElementById('kinestheticScore').value = counts.Kinesthetic;
+                });
+            });
+        </script>
+    </div>
+</div>

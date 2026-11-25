@@ -1,0 +1,290 @@
+@model IEnumerable<EduBoost.Models.InnovativeMethod>
+@{
+    ViewData["Title"] = "Innovative Teaching Library";
+    var methodsList = Model.ToList();
+    var totalMethods = methodsList.Count;
+    var visualCount = methodsList.Count(m => m.SuitableLearningStyle.Contains("Visual", StringComparison.OrdinalIgnoreCase));
+    var auditoryCount = methodsList.Count(m => m.SuitableLearningStyle.Contains("Audit", StringComparison.OrdinalIgnoreCase));
+    var kinestheticCount = methodsList.Count(m => m.SuitableLearningStyle.Contains("Kinest", StringComparison.OrdinalIgnoreCase));
+    var readingCount = methodsList.Count(m => m.SuitableLearningStyle.Contains("Read", StringComparison.OrdinalIgnoreCase) || m.SuitableLearningStyle.Contains("Write", StringComparison.OrdinalIgnoreCase));
+}
+
+<div class="page-head mb-4">
+    <div>
+        <span class="eyebrow">Differentiated Pedagogies & VARK</span>
+        <h1 class="text-gradient mb-1">Innovative Teaching Library</h1>
+        <p class="text-muted mb-0" style="font-size: 0.92rem;">
+            Evidence-based remedial teaching strategies matched directly to each student's dominant VARK learning modality.
+        </p>
+    </div>
+    <div class="page-head-actions d-flex align-items-center gap-2">
+        <a class="btn btn-outline-secondary d-inline-flex align-items-center gap-2" asp-controller="RemedialPlans" asp-action="Index">
+            <svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            <span>Remedial Plans</span>
+        </a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a class="btn btn-primary d-inline-flex align-items-center gap-2" asp-action="Create">
+                <svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>+ Add Method</span>
+            </a>
+        }
+    </div>
+</div>
+
+<!-- VARK Modality KPI Row -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-top">
+                <div>
+                    <p class="kpi-label">Visual (V)</p>
+                    <p class="kpi-value" style="color: #0ea5e9;">@visualCount</p>
+                </div>
+                <span class="kpi-icon" style="color: #0ea5e9;" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </span>
+            </div>
+            <div class="kpi-meta">
+                <span class="badge bg-info-subtle text-info fw-semibold">Diagrams & Charts</span>
+                <span class="text-muted ms-auto">Spatial learners</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-top">
+                <div>
+                    <p class="kpi-label">Auditory (A)</p>
+                    <p class="kpi-value" style="color: #8b5cf6;">@auditoryCount</p>
+                </div>
+                <span class="kpi-icon" style="color: #8b5cf6;" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+                        <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+                    </svg>
+                </span>
+            </div>
+            <div class="kpi-meta">
+                <span class="badge bg-primary-subtle text-primary fw-semibold">Discussion & Socratic</span>
+                <span class="text-muted ms-auto">Listening focus</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-top">
+                <div>
+                    <p class="kpi-label">Kinesthetic (K)</p>
+                    <p class="kpi-value" style="color: #f59e0b;">@kinestheticCount</p>
+                </div>
+                <span class="kpi-icon" style="color: #f59e0b;" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                </span>
+            </div>
+            <div class="kpi-meta">
+                <span class="badge bg-warning-subtle text-warning fw-semibold">Hands-on & Lab</span>
+                <span class="text-muted ms-auto">Tactile activity</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-top">
+                <div>
+                    <p class="kpi-label">Reading / Writing (R)</p>
+                    <p class="kpi-value" style="color: #10b981;">@readingCount</p>
+                </div>
+                <span class="kpi-icon" style="color: #10b981;" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                </span>
+            </div>
+            <div class="kpi-meta">
+                <span class="badge bg-success-subtle text-success fw-semibold">Text & Summaries</span>
+                <span class="text-muted ms-auto">Analytical writing</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Teacher Quick-Start & Classroom Demo Guide -->
+<div class="card glass-card mb-4 p-3 p-md-4">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+        <div>
+            <span class="badge bg-primary-subtle text-primary fw-semibold mb-1">Teacher Onboarding &amp; Demo Guide</span>
+            <h2 class="h6 fw-bold mb-0" style="color: var(--text);">How to Apply These Methods in Your Classroom</h2>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1" onclick="askAiForMethodDemo()">
+            <span>✨ Ask 24/7 AI for a Live Class Demo</span>
+        </button>
+    </div>
+    <div class="row g-3 small">
+        <div class="col-md-4">
+            <div class="p-3 rounded-3 h-100" style="background: var(--surface-soft); border: 1px solid var(--border);">
+                <div class="fw-bold mb-1" style="color: var(--text);">1. Check Student VARK Style</div>
+                <p class="text-muted mb-0">Open a student's profile (<strong>Students &rarr; Details</strong>) and run the 4-question VARK quiz to see if they learn best via Visual, Auditory, Kinesthetic, or Reading methods.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3 rounded-3 h-100" style="background: var(--surface-soft); border: 1px solid var(--border);">
+                <div class="fw-bold mb-1" style="color: var(--text);">2. Run a 10-Min Method Demo</div>
+                <p class="text-muted mb-0">Filter cards below by VARK style and follow the <strong>Demo &amp; Example</strong> instructions on each card (e.g., 3-color anchor charts, 3D clay models, or 3-min pair walkthroughs).</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3 rounded-3 h-100" style="background: var(--surface-soft); border: 1px solid var(--border);">
+                <div class="fw-bold mb-1" style="color: var(--text);">3. Link to a Remedial Plan</div>
+                <p class="text-muted mb-0">Click <strong>Create Remedial Plan</strong> on a flagged slow learner's profile—matched strategies appear automatically so you can log weekly <em>Score After</em> gains.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive Modality Filter -->
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div class="d-flex flex-wrap gap-2" id="varkFilterContainer">
+        <button type="button" class="filter-pill active" onclick="filterMethods('all', this)">
+            <span>All Strategies</span>
+            <span class="badge rounded-pill bg-light text-dark">@totalMethods</span>
+        </button>
+        <button type="button" class="filter-pill" onclick="filterMethods('visual', this)">
+            <span>👁️ Visual</span>
+            <span class="badge rounded-pill bg-light text-dark">@visualCount</span>
+        </button>
+        <button type="button" class="filter-pill" onclick="filterMethods('auditory', this)">
+            <span>🎧 Auditory</span>
+            <span class="badge rounded-pill bg-light text-dark">@auditoryCount</span>
+        </button>
+        <button type="button" class="filter-pill" onclick="filterMethods('kinesthetic', this)">
+            <span>🏃 Kinesthetic</span>
+            <span class="badge rounded-pill bg-light text-dark">@kinestheticCount</span>
+        </button>
+        <button type="button" class="filter-pill" onclick="filterMethods('reading', this)">
+            <span>📖 Read/Write</span>
+            <span class="badge rounded-pill bg-light text-dark">@readingCount</span>
+        </button>
+    </div>
+    <span class="text-muted small">Auto-suggested during Remedial Plan authoring</span>
+</div>
+
+@if (!methodsList.Any())
+{
+    <div class="card glass-card text-center p-5 reveal">
+        <div class="empty-icon fs-1 mb-2">💡</div>
+        <h3 class="h5 fw-bold mb-1">The Innovative Methods Library is Empty</h3>
+        <p class="text-muted mb-3" style="max-width: 480px; margin: 0 auto;">
+            Add scientific teaching strategies to help educators apply targeted pedagogies to slow learners.
+        </p>
+        @if (User.IsInRole("Admin"))
+        {
+            <div>
+                <a class="btn btn-primary" asp-action="Create">+ Add First Strategy</a>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <!-- Strategy Cards Grid -->
+    <div class="row g-3 mb-4" id="methodsGrid">
+        @foreach (var method in methodsList)
+        {
+            var isVisual = method.SuitableLearningStyle.Contains("Visual", StringComparison.OrdinalIgnoreCase);
+            var isAuditory = method.SuitableLearningStyle.Contains("Audit", StringComparison.OrdinalIgnoreCase);
+            var isKinesthetic = method.SuitableLearningStyle.Contains("Kinest", StringComparison.OrdinalIgnoreCase);
+            var isReading = method.SuitableLearningStyle.Contains("Read", StringComparison.OrdinalIgnoreCase) || method.SuitableLearningStyle.Contains("Write", StringComparison.OrdinalIgnoreCase);
+
+            string filterKey = isVisual ? "visual" : (isAuditory ? "auditory" : (isKinesthetic ? "kinesthetic" : "reading"));
+            string iconBoxClass = isVisual ? "icon-box-cyan" : (isAuditory ? "icon-box-purple" : (isKinesthetic ? "icon-box-amber" : "icon-box-emerald"));
+            string chipClass = isVisual ? "chip-blue" : (isAuditory ? "chip-purple" : (isKinesthetic ? "chip-amber" : "chip-emerald"));
+            string iconEmoji = isVisual ? "👁️" : (isAuditory ? "🎧" : (isKinesthetic ? "🏃" : "📖"));
+
+            <div class="col-md-6 col-lg-4 method-item" data-vark="@filterKey">
+                <div class="module-card h-100">
+                    <div class="d-flex align-items-start justify-content-between gap-2 mb-3">
+                        <div class="icon-box-lg @iconBoxClass">
+                            @iconEmoji
+                        </div>
+                        <span class="chip @chipClass">
+                            @method.SuitableLearningStyle
+                        </span>
+                    </div>
+
+                    <h3 class="h5 fw-bold mb-1" style="color: var(--text);">@method.Name</h3>
+                    <div class="text-muted small fw-medium mb-3">Category: @method.Category</div>
+
+                    <p class="text-muted small mb-4 flex-grow-1" style="line-height: 1.6;">
+                        @method.Description
+                    </p>
+
+                    <div class="pt-3 border-top d-flex align-items-center justify-content-between" style="border-color: var(--border) !important;">
+                        <span class="badge" style="background: var(--surface-soft); color: var(--muted); border: 1px solid var(--border); font-size: 0.72rem; border-radius: 6px;">
+                            Pedagogy #@method.Id
+                        </span>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <div class="d-flex gap-1">
+                                <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@method.Id" style="border-radius: 8px;">
+                                    Edit
+                                </a>
+                                <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@method.Id" style="border-radius: 8px;">
+                                    Delete
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<script>
+    function filterMethods(category, element) {
+        document.querySelectorAll('#varkFilterContainer .filter-pill').forEach(btn => btn.classList.remove('active'));
+        if (element) {
+            element.classList.add('active');
+        }
+
+        const items = document.querySelectorAll('#methodsGrid .method-item');
+        items.forEach(item => {
+            if (category === 'all' || item.getAttribute('data-vark') === category) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    function askAiForMethodDemo() {
+        const launcher = document.getElementById('chatLauncherBtn');
+        const chatWindow = document.getElementById('chatBoxWindow');
+        const input = document.getElementById('chatInputMessage');
+        const form = document.getElementById('chatForm');
+
+        if (launcher && chatWindow && chatWindow.classList.contains('d-none')) {
+            launcher.click();
+        }
+        if (input && form) {
+            input.value = 'Give a quick 10-minute classroom demo of an innovative teaching method for a new teacher handling slow learners.';
+            form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        }
+    }
+</script>

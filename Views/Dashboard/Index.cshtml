@@ -1,0 +1,571 @@
+﻿@using System.Text.Json
+@model EduBoost.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    var hour = DateTime.Now.Hour;
+    var timeGreeting = hour < 12 ? "Good Morning" : (hour < 17 ? "Good Afternoon" : "Good Evening");
+    var fullNameClaim = User.FindFirst("FullName")?.Value;
+    string displayName;
+    if (!string.IsNullOrWhiteSpace(fullNameClaim))
+    {
+        displayName = fullNameClaim.Trim();
+    }
+    else
+    {
+        displayName = User.Identity?.Name?.Split('@')[0] ?? "Educator";
+        if (displayName.Length > 0)
+        {
+            displayName = char.ToUpper(displayName[0]) + (displayName.Length > 1 ? displayName.Substring(1) : "");
+        }
+    }
+    var userRole = User.IsInRole("Admin") ? "Administrator" : "Teacher";
+}
+
+<div class="page-head mb-4">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <h1 class="h3 fw-bold mb-0">@timeGreeting, @displayName 👋</h1>
+            <span class="badge" style="background: rgba(37, 99, 235, 0.1); color: #2563eb; font-weight: 600; padding: 4px 10px; border-radius: 8px;">
+                @userRole
+            </span>
+        </div>
+        <p class="text-muted mb-0" style="font-size: 0.92rem;">
+            Welcome back to EduBoost · Track student performance, detect slow learners, and achieve remedial goals.
+        </p>
+    </div>
+    <div class="page-head-actions d-flex align-items-center gap-2">
+        <a class="btn btn-outline-secondary d-inline-flex align-items-center gap-2" asp-controller="Assessments" asp-action="Create">
+            <svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>+ Assessment</span>
+        </a>
+        <button class="btn btn-primary d-inline-flex align-items-center gap-2" type="button" data-bs-toggle="modal" data-bs-target="#studentModal">
+            <svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>+ Add student</span>
+        </button>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <a class="kpi-card" asp-controller="Students" asp-action="Index" aria-label="View all students">
+            <div class="kpi-top">
+                <div>
+                    <p class="kpi-label">Total students</p>
+                    <p class="kpi-value">@Model.TotalStudents</p>
+                </div>
+                <span class="kpi-icon" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                </span>
+            </div>
+            <div class="kpi-meta">
+                <span class="badge bg-success-subtle text-success fw-semibold">+12% vs prev. month</span>
+                <span class="text-muted ms-auto">Across classes</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <a class="kpi-card" asp-controller="SlowLearners" asp-action="Index" aria-label="Review flagged students">
+            <div class="kpi-top">
+                <div>
+                    <p class="kpi-label">Slow learners</p>
+                    <p class="kpi-value">@Model.SlowLearners</p>
+                </div>
+                <span class="kpi-icon" style="color: #ef4444;" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="m10.29 3.86-8.18 14A2 2 0 0 0 3.82 21h16.36a2 2 0 0 0 1.71-3.14l-8.18-14a2 2 0 0 0-3.42 0Z" />
+                        <path d="M12 9v4" />
+                        <path d="M12 17h.01" />
+                    </svg>
+                </span>
+            </div>
+            <div class="kpi-meta">
+                <span class="badge bg-danger-subtle text-danger fw-semibold">@Model.SupportRate% of cohort</span>
+                <span class="text-muted ms-auto">Needs support</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <a class="kpi-card" asp-controller="RemedialPlans" asp-action="Index" aria-label="Open remedial plans">
+            <div class="kpi-top">
+                <div>
+                    <p class="kpi-label">Active plans</p>
+                    <p class="kpi-value">@Model.ActivePlans</p>
+                </div>
+                <span class="kpi-icon" style="color: #f59e0b;" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" />
+                    </svg>
+                </span>
+            </div>
+            <div class="kpi-meta">
+                <span class="badge bg-warning-subtle text-warning fw-semibold">In progress</span>
+                <span class="text-muted ms-auto">Remedial support</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <a class="kpi-card" asp-controller="Assessments" asp-action="Index" aria-label="Open assessments">
+            <div class="kpi-top">
+                <div>
+                    <p class="kpi-label">Average score</p>
+                    <p class="kpi-value">@Model.AverageScore.ToString("0.#")%</p>
+                </div>
+                <span class="kpi-icon" style="color: #10b981;" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M3 3v18h18" />
+                        <path d="m7 14 3-4 3 3 5-7" />
+                    </svg>
+                </span>
+            </div>
+            <div class="kpi-meta">
+                <span class="badge bg-info-subtle text-info fw-semibold">All subjects</span>
+                <span class="text-muted ms-auto">Recorded</span>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-xl-7">
+        <div class="card glass-card chart-card reveal" style="--i: 4">
+            <div class="card-body">
+                <div class="panel-heading">
+                    <div>
+                        <h2>Average percentage by subject</h2>
+                        <p class="panel-sub">Mean score across every recorded assessment.</p>
+                    </div>
+                    <span class="badge bg-primary">@Model.SubjectAverages.Count subjects</span>
+                </div>
+
+                @if (Model.SubjectAverages.Count == 0)
+                {
+                    <div class="empty-state">
+                        <span class="empty-icon" aria-hidden="true">📊</span>
+                        <h3>No assessment data yet</h3>
+                        <p>Add assessments to unlock the subject performance chart.</p>
+                        <a class="btn btn-glow btn-sm" asp-controller="Assessments" asp-action="Create">Add assessment</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="chart-shell chart-bar mt-3">
+                        <canvas id="subjectChart"></canvas>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-5">
+        <div class="card glass-card chart-card reveal" style="--i: 5">
+            <div class="card-body">
+                <div class="panel-heading">
+                    <div>
+                        <h2>Students needing support</h2>
+                        <p class="panel-sub">Flagged slow learners versus students on track.</p>
+                    </div>
+                </div>
+
+                @if (Model.TotalStudents == 0)
+                {
+                    <div class="empty-state">
+                        <span class="empty-icon" aria-hidden="true">🧑‍🎓</span>
+                        <h3>No students yet</h3>
+                        <p>Add students to see the support breakdown.</p>
+                        <button class="btn btn-glow btn-sm" type="button"
+                                data-bs-toggle="modal" data-bs-target="#studentModal">
+                            Add student
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <div class="chart-shell chart-doughnut mt-2">
+                        <canvas id="supportChart"></canvas>
+                    </div>
+                    <p class="chart-note text-center">
+                        @Model.SlowLearners of @Model.TotalStudents students are currently flagged for support.
+                    </p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12">
+        <div class="card glass-card reveal" style="--i: 6">
+            <div class="card-header">
+                <div class="panel-heading mb-0">
+                    <div>
+                        <h2>Recent students</h2>
+                        <p class="panel-sub">Latest records from the Students module.</p>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <a class="btn btn-ghost btn-sm" asp-controller="Students" asp-action="Index">View all</a>
+                        <button class="btn btn-glow btn-sm" type="button"
+                                data-bs-toggle="modal" data-bs-target="#studentModal">
+                            + Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.RecentStudents.Count == 0)
+            {
+                <div class="empty-state">
+                    <span class="empty-icon" aria-hidden="true">🎒</span>
+                    <h3>No students found</h3>
+                    <p>Add your first student to start tracking performance.</p>
+                    <button class="btn btn-glow btn-sm" type="button"
+                            data-bs-toggle="modal" data-bs-target="#studentModal">
+                        Add student
+                    </button>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle table-stack">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Class</th>
+                                <th>Attendance</th>
+                                <th>Risk score</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (var i = 0; i < Model.RecentStudents.Count; i++)
+                            {
+                                var student = Model.RecentStudents[i];
+                                var initials = string.Concat(student.FullName
+                                    .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                    .Take(2)
+                                    .Select(part => char.ToUpperInvariant(part[0])));
+                                <tr style="--row: @i">
+                                    <td data-label="Student">
+                                        <div class="person-cell">
+                                            <span class="avatar" aria-hidden="true">@initials</span>
+                                            <span>
+                                                <span class="person-name">@student.FullName</span>
+                                                <span class="person-sub">@student.RollNo</span>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td data-label="Class">@student.ClassName</td>
+                                    <td data-label="Attendance">@student.AttendancePercent.ToString("0.#")%</td>
+                                    <td data-label="Risk score">
+                                        <div class="risk-meter">
+                                            <div class="progress" role="progressbar"
+                                                 aria-valuenow="@student.RiskScore" aria-valuemin="0" aria-valuemax="100"
+                                                 aria-label="Risk score">
+                                                <div class="progress-bar @(student.RiskScore >= 60 ? "bg-danger" : student.RiskScore >= 45 ? "bg-warning" : "bg-success")"
+                                                     style="width: @Math.Min(100, student.RiskScore)%"></div>
+                                            </div>
+                                            <span class="badge @(student.RiskScore >= 60 ? "bg-danger" : student.RiskScore >= 45 ? "bg-warning" : "bg-success")">
+                                                @student.RiskScore.ToString("0.0")
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td data-label="Status">
+                                        <span class="status-pill @(student.IsSlowLearner ? "needs-support" : "on-track")">
+                                            @(student.IsSlowLearner ? "Needs support" : "On track")
+                                        </span>
+                                    </td>
+                                    <td data-label="Actions" class="text-end text-nowrap">
+                                        <a class="btn btn-sm btn-outline-secondary" asp-controller="Students"
+                                           asp-action="Details" asp-route-id="@student.Id">View</a>
+                                        <a class="btn btn-sm btn-outline-primary" asp-controller="Students"
+                                           asp-action="Edit" asp-route-id="@student.Id">Edit</a>
+                                        <a class="btn btn-sm btn-outline-danger" asp-controller="Students"
+                                           asp-action="Delete" asp-route-id="@student.Id">Delete</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="card glass-card reveal" style="--i: 7">
+            <div class="card-header">
+                <div class="panel-heading mb-0">
+                    <div>
+                        <h2>Subject summary</h2>
+                        <p class="panel-sub">Health check by average percentage.</p>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.SubjectAverages.Count == 0)
+            {
+                <div class="empty-state">
+                    <span class="empty-icon" aria-hidden="true">📚</span>
+                    <h3>No subjects recorded</h3>
+                    <p>Assessment averages will appear here.</p>
+                </div>
+            }
+            else
+            {
+                <div class="card-body pt-3">
+                    <div class="row g-3">
+                        @{
+                            var row = 0;
+                        }
+                        @foreach (var item in Model.SubjectAverages.OrderByDescending(x => x.Value))
+                        {
+                            <div class="col-md-6 col-xl-4" style="--i: @row">
+                                <div class="subject-tile reveal">
+                                    <div class="d-flex align-items-start justify-content-between gap-2">
+                                        <div>
+                                            <p class="kpi-label mb-1">@item.Key</p>
+                                            <p class="subject-value">@item.Value.ToString("0.#")%</p>
+                                        </div>
+                                        <span class="badge @(item.Value < 40 ? "bg-danger" : item.Value < 60 ? "bg-warning" : "bg-success")">
+                                            @(item.Value < 40 ? "Critical" : item.Value < 60 ? "Needs attention" : "Healthy")
+                                        </span>
+                                    </div>
+                                    <div class="progress mt-3" role="progressbar"
+                                         aria-valuenow="@item.Value" aria-valuemin="0" aria-valuemax="100"
+                                         aria-label="@item.Key average">
+                                        <div class="progress-bar @(item.Value < 40 ? "bg-danger" : item.Value < 60 ? "bg-warning" : "bg-success")"
+                                             style="width: @item.Value%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            row++;
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- AI Remedial Plan Recommendation Banner (Image 1 style) -->
+    <div class="col-12 mt-3">
+        <div class="card p-3 p-md-4" style="background: var(--surface); border: 1.5px dashed var(--border); border-radius: 18px;">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div>
+                    <h4 class="h6 fw-bold mb-1 text-dark-emphasis">Need personalized remedial strategies? Generate an AI Support Plan</h4>
+                    <p class="text-muted mb-0" style="font-size: 0.88rem;">Automatically diagnose VARK learning styles and generate targeted multi-week remedial agendas for identified slow learners.</p>
+                </div>
+                <a class="btn btn-primary d-inline-flex align-items-center gap-2" asp-controller="SlowLearners" asp-action="Index">
+                    <span>Review Slow Learners</span>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<partial name="_StudentModal" />
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script>
+        (function () {
+            if (!window.Chart || !window.EduBoost) return;
+
+            const subjectLabels = @Html.Raw(JsonSerializer.Serialize(Model.SubjectAverages.Keys));
+            const subjectValues = @Html.Raw(JsonSerializer.Serialize(Model.SubjectAverages.Values));
+            const totalStudents = @Model.TotalStudents;
+            const slowLearners = @Model.SlowLearners;
+            const registry = [];
+            const alpha = window.EduBoost.withAlpha;
+
+            function tooltipTheme(colors) {
+                return {
+                    backgroundColor: 'rgba(7, 11, 26, 0.94)',
+                    borderColor: alpha(colors.accent, 0.55),
+                    borderWidth: 1,
+                    titleColor: '#ffffff',
+                    bodyColor: colors.text,
+                    padding: 10,
+                    cornerRadius: 10,
+                    boxPadding: 4
+                };
+            }
+
+            const centerLabel = {
+                id: 'centerLabel',
+                afterDraw(chart) {
+                    if (chart.config.type !== 'doughnut') return;
+                    const area = chart.chartArea;
+                    if (!area) return;
+
+                    const colors = window.EduBoost.getThemeColors();
+                    const values = chart.data.datasets[0].data;
+                    const total = values.reduce((sum, value) => sum + value, 0);
+                    const percentage = total > 0 ? Math.round((values[0] / total) * 100) : 0;
+                    const x = (area.left + area.right) / 2;
+                    const y = (area.top + area.bottom) / 2;
+
+                    chart.ctx.save();
+                    chart.ctx.textAlign = 'center';
+                    chart.ctx.textBaseline = 'middle';
+                    chart.ctx.fillStyle = colors.text;
+                    chart.ctx.font = '700 26px "Segoe UI", system-ui, sans-serif';
+                    chart.ctx.fillText(percentage + '%', x, y - 3);
+                    chart.ctx.fillStyle = colors.muted;
+                    chart.ctx.font = '600 9px "Segoe UI", system-ui, sans-serif';
+                    chart.ctx.fillText('NEED SUPPORT', x, y + 18);
+                    chart.ctx.restore();
+                }
+            };
+
+            const subjectCanvas = document.getElementById('subjectChart');
+            if (subjectCanvas && subjectLabels.length > 0) {
+                const colors = window.EduBoost.getThemeColors();
+                registry.push({
+                    kind: 'bar',
+                    chart: new Chart(subjectCanvas, {
+                        type: 'bar',
+                        data: {
+                            labels: subjectLabels,
+                            datasets: [{
+                                label: 'Average %',
+                                data: subjectValues,
+                                backgroundColor: subjectLabels.map((_, index) =>
+                                    alpha(index % 2 === 0 ? colors.accent : colors.accent2, 0.72)),
+                                borderColor: subjectLabels.map((_, index) =>
+                                    index % 2 === 0 ? colors.accent : colors.accent2),
+                                borderWidth: 1,
+                                borderRadius: 8,
+                                borderSkipped: false,
+                                maxBarThickness: 42
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            animation: { duration: 900, easing: 'easeOutQuart' },
+                            interaction: { mode: 'index', intersect: false },
+                            scales: {
+                                x: {
+                                    grid: { display: false },
+                                    border: { display: false },
+                                    ticks: { color: colors.muted, maxRotation: 0, autoSkip: true }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100,
+                                    grid: { color: colors.grid, drawTicks: false },
+                                    border: { display: false },
+                                    ticks: {
+                                        color: colors.muted,
+                                        padding: 8,
+                                        callback: value => value + '%'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: Object.assign(tooltipTheme(colors), {
+                                    callbacks: { label: context => ' ' + context.parsed.y + '%' }
+                                })
+                            }
+                        }
+                    })
+                });
+            }
+
+            const supportCanvas = document.getElementById('supportChart');
+            if (supportCanvas && totalStudents > 0) {
+                const colors = window.EduBoost.getThemeColors();
+                registry.push({
+                    kind: 'doughnut',
+                    chart: new Chart(supportCanvas, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Slow learners', 'On track'],
+                            datasets: [{
+                                data: [slowLearners, Math.max(0, totalStudents - slowLearners)],
+                                backgroundColor: [colors.danger, colors.success],
+                                borderColor: 'transparent',
+                                borderWidth: 0,
+                                spacing: 4,
+                                hoverOffset: 6
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '68%',
+                            animation: { duration: 900, easing: 'easeOutQuart' },
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        color: colors.text,
+                                        usePointStyle: true,
+                                        pointStyle: 'circle',
+                                        boxWidth: 8,
+                                        boxHeight: 8,
+                                        padding: 16
+                                    }
+                                },
+                                tooltip: tooltipTheme(colors)
+                            }
+                        },
+                        plugins: [centerLabel]
+                    })
+                });
+            }
+
+            function refreshChartTheme() {
+                const colors = window.EduBoost.getThemeColors();
+
+                registry.forEach(entry => {
+                    const chart = entry.chart;
+
+                    if (entry.kind === 'bar') {
+                        const dataset = chart.data.datasets[0];
+                        dataset.backgroundColor = chart.data.labels.map((_, index) =>
+                            alpha(index % 2 === 0 ? colors.accent : colors.accent2, 0.72));
+                        dataset.borderColor = chart.data.labels.map((_, index) =>
+                            index % 2 === 0 ? colors.accent : colors.accent2);
+                        chart.options.scales.x.ticks.color = colors.muted;
+                        chart.options.scales.y.ticks.color = colors.muted;
+                        chart.options.scales.y.grid.color = colors.grid;
+                        Object.assign(chart.options.plugins.tooltip, tooltipTheme(colors));
+                    }
+
+                    if (entry.kind === 'doughnut') {
+                        const dataset = chart.data.datasets[0];
+                        dataset.backgroundColor = [colors.danger, colors.success];
+                        chart.options.plugins.legend.labels.color = colors.text;
+                        Object.assign(chart.options.plugins.tooltip, tooltipTheme(colors));
+                    }
+
+                    chart.update('none');
+                });
+            }
+
+            window.addEventListener('eduboost:themechange', refreshChartTheme);
+        })();
+    </script>
+}

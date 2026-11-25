@@ -1,0 +1,253 @@
+﻿@model IEnumerable<EduBoost.Models.Student>
+@{
+    ViewData["Title"] = "Students";
+    var search = ViewData["Search"] as string;
+    var students = Model.ToList();
+    var rowIndex = 0;
+}
+
+<div class="page-head mb-4">
+    <div>
+        <span class="eyebrow">Student records</span>
+        <h1 class="text-gradient">Students</h1>
+        <p>Manage student records, attendance and learning styles from one glass workspace.</p>
+    </div>
+    <div class="page-head-actions">
+        <a class="btn btn-outline-secondary" asp-controller="SlowLearners" asp-action="Index">Slow learners</a>
+        <button class="btn btn-glow" type="button" data-bs-toggle="modal" data-bs-target="#studentModal">
+            + Add student
+        </button>
+    </div>
+</div>
+
+@{
+    var totalCount = students.Count;
+    var slowLearnerCount = students.Count(s => s.IsSlowLearner);
+    var avgAttendance = totalCount > 0 ? students.Average(s => s.AttendancePercent) : 0;
+    var avgRisk = totalCount > 0 ? students.Average(s => s.RiskScore) : 0;
+}
+
+<!-- Executive Metric Row -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-top">
+                <div>
+                    <p class="kpi-label">Total Enrolled</p>
+                    <p class="kpi-value">@totalCount</p>
+                </div>
+                <span class="kpi-icon" style="color: #2563eb;" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </span>
+            </div>
+            <div class="kpi-meta">
+                <span class="badge bg-success-subtle text-success fw-semibold">Active Cohort</span>
+                <span class="text-muted ms-auto">Classes 9 & 10</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-top">
+                <div>
+                    <p class="kpi-label">Slow Learners</p>
+                    <p class="kpi-value" style="color: #ef4444;">@slowLearnerCount</p>
+                </div>
+                <span class="kpi-icon" style="color: #ef4444;" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </span>
+            </div>
+            <div class="kpi-meta">
+                <span class="badge bg-danger-subtle text-danger fw-semibold">Needs Support</span>
+                <span class="text-muted ms-auto">Remedial queue</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-top">
+                <div>
+                    <p class="kpi-label">Cohort Attendance</p>
+                    <p class="kpi-value">@avgAttendance.ToString("0.#")%</p>
+                </div>
+                <span class="kpi-icon" style="color: #10b981;" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </span>
+            </div>
+            <div class="kpi-meta">
+                <span class="badge bg-success-subtle text-success fw-semibold">Fidelity Rate</span>
+                <span class="text-muted ms-auto">Benchmark 75%</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-top">
+                <div>
+                    <p class="kpi-label">Cohort Risk Avg</p>
+                    <p class="kpi-value">@avgRisk.ToString("0.0")</p>
+                </div>
+                <span class="kpi-icon" style="color: #8b5cf6;" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 14 14"></polyline>
+                    </svg>
+                </span>
+            </div>
+            <div class="kpi-meta">
+                <span class="badge bg-primary-subtle text-primary fw-semibold">Safe Baseline</span>
+                <span class="text-muted ms-auto">Weighted score</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="card glass-card mb-4 reveal" style="--i: 1">
+    <div class="card-body">
+        <form method="get" class="d-flex flex-wrap align-items-end gap-2">
+            <div class="flex-grow-1" style="min-width: 240px; max-width: 430px;">
+                <label class="form-label" for="studentSearch">Search records</label>
+                <div class="input-group">
+                    <span class="input-group-text" aria-hidden="true">
+                        <svg class="icon" viewBox="0 0 24 24" width="16" height="16">
+                            <circle cx="11" cy="11" r="7" />
+                            <path d="m21 21-4.3-4.3" />
+                        </svg>
+                    </span>
+                    <input class="form-control" id="studentSearch" type="search" name="search"
+                           value="@search" placeholder="Search name, roll number or class" />
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-glow" type="submit">Search</button>
+                @if (!string.IsNullOrWhiteSpace(search))
+                {
+                    <a class="btn btn-outline-secondary" asp-action="Index">Clear</a>
+                }
+            </div>
+            @if (!string.IsNullOrWhiteSpace(search))
+            {
+                <span class="badge bg-primary ms-auto">Filtered: @search</span>
+            }
+        </form>
+    </div>
+</div>
+
+<div class="card glass-card reveal" style="--i: 2">
+    <div class="card-header">
+        <div class="panel-heading mb-0">
+            <div>
+                <h2>Student records</h2>
+                <p class="panel-sub">@students.Count record@(students.Count == 1 ? "" : "s") in view.</p>
+            </div>
+            <span class="badge bg-primary">@students.Count total</span>
+        </div>
+    </div>
+
+    @if (students.Count == 0)
+    {
+        <div class="empty-state">
+            <span class="empty-icon" aria-hidden="true">🎒</span>
+            <h3>No students found</h3>
+            <p>
+                @if (!string.IsNullOrWhiteSpace(search))
+                {
+                    <text>No match for “@search”. Try a different search or clear the filter.</text>
+                }
+                else
+                {
+                    <text>Add your first student to start tracking performance.</text>
+                }
+            </p>
+            <button class="btn btn-glow btn-sm" type="button"
+                    data-bs-toggle="modal" data-bs-target="#studentModal">
+                Add student
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle table-stack">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Class</th>
+                        <th>Attendance</th>
+                        <th>Learning style</th>
+                        <th>Risk score</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var student in students)
+                    {
+                        var initials = string.Concat(student.FullName
+                            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                            .Take(2)
+                            .Select(part => char.ToUpperInvariant(part[0])));
+                        <tr style="--row: @rowIndex">
+                            <td data-label="Student">
+                                <div class="person-cell">
+                                    <span class="avatar" aria-hidden="true">@initials</span>
+                                    <span>
+                                        <span class="person-name">@student.FullName</span>
+                                        <span class="person-sub">@student.RollNo</span>
+                                    </span>
+                                </div>
+                            </td>
+                            <td data-label="Class">@student.ClassName</td>
+                            <td data-label="Attendance">@student.AttendancePercent.ToString("0.#")%</td>
+                            <td data-label="Learning style">@student.LearningStyle</td>
+                            <td data-label="Risk score">
+                                <div class="risk-meter">
+                                    <div class="progress" role="progressbar"
+                                         aria-valuenow="@student.RiskScore" aria-valuemin="0" aria-valuemax="100"
+                                         aria-label="Risk score">
+                                        <div class="progress-bar @(student.RiskScore >= 60 ? "bg-danger" : student.RiskScore >= 45 ? "bg-warning" : "bg-success")"
+                                             style="width: @Math.Min(100, student.RiskScore)%"></div>
+                                    </div>
+                                    <span class="badge @(student.RiskScore >= 60 ? "bg-danger" : student.RiskScore >= 45 ? "bg-warning" : "bg-success")">
+                                        @student.RiskScore.ToString("0.0")
+                                    </span>
+                                </div>
+                            </td>
+                            <td data-label="Status">
+                                <span class="status-pill @(student.IsSlowLearner ? "needs-support" : "on-track")">
+                                    @(student.IsSlowLearner ? "Needs support" : "On track")
+                                </span>
+                            </td>
+                            <td data-label="Actions" class="text-end text-nowrap">
+                                <a class="btn btn-sm btn-outline-secondary" asp-action="Details"
+                                   asp-route-id="@student.Id">Details</a>
+                                <a class="btn btn-sm btn-outline-primary" asp-action="Edit"
+                                   asp-route-id="@student.Id">Edit</a>
+                                <a class="btn btn-sm btn-outline-danger" asp-action="Delete"
+                                   asp-route-id="@student.Id">Delete</a>
+                            </td>
+                        </tr>
+                        rowIndex++;
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<partial name="_StudentModal" />

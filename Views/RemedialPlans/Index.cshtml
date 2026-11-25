@@ -1,0 +1,244 @@
+@model IEnumerable<EduBoost.Models.RemedialPlan>
+@{
+    ViewData["Title"] = "Remedial Teaching Plans";
+    var plansList = Model.ToList();
+    var totalPlans = plansList.Count;
+    var activePlans = plansList.Count(p => p.Status != "Completed");
+    var completedPlans = plansList.Count(p => p.Status == "Completed");
+    var aiPlans = plansList.Count(p => p.IsAiGenerated);
+    var totalLogs = plansList.Sum(p => p.Logs?.Count ?? 0);
+}
+
+<div class="page-head mb-4">
+    <div>
+        <span class="eyebrow">Personalized Intervention Lifecycle</span>
+        <h1 class="text-gradient mb-1">Remedial Teaching Plans</h1>
+        <p class="text-muted mb-0" style="font-size: 0.92rem;">
+            Track targeted academic interventions, monitor weekly session logs, and measure post-remedial learning recovery.
+        </p>
+    </div>
+    <div class="page-head-actions d-flex align-items-center gap-2">
+        <a class="btn btn-outline-secondary d-inline-flex align-items-center gap-2" asp-controller="SlowLearners" asp-action="Index">
+            <svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <span>Slow Learners Hub</span>
+        </a>
+        <a class="btn btn-outline-primary d-inline-flex align-items-center gap-2" asp-controller="InnovativeMethods" asp-action="Index">
+            <svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+            </svg>
+            <span>Methods Library</span>
+        </a>
+    </div>
+</div>
+
+<!-- Executive Metric Row -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-top">
+                <div>
+                    <p class="kpi-label">Active Plans</p>
+                    <p class="kpi-value" style="color: #2563eb;">@activePlans</p>
+                </div>
+                <span class="kpi-icon" style="color: #2563eb;" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                </span>
+            </div>
+            <div class="kpi-meta">
+                <span class="badge bg-primary-subtle text-primary fw-semibold">In Progress</span>
+                <span class="text-muted ms-auto">Under intervention</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-top">
+                <div>
+                    <p class="kpi-label">Completed Plans</p>
+                    <p class="kpi-value" style="color: #10b981;">@completedPlans</p>
+                </div>
+                <span class="kpi-icon" style="color: #10b981;" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                </span>
+            </div>
+            <div class="kpi-meta">
+                <span class="badge bg-success-subtle text-success fw-semibold">Resolved</span>
+                <span class="text-muted ms-auto">Learning recovered</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-top">
+                <div>
+                    <p class="kpi-label">AI Strategies</p>
+                    <p class="kpi-value" style="color: #8b5cf6;">@aiPlans</p>
+                </div>
+                <span class="kpi-icon" style="color: #8b5cf6;" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+                    </svg>
+                </span>
+            </div>
+            <div class="kpi-meta">
+                <span class="badge bg-primary-subtle text-primary fw-semibold">Smart Pedagogies</span>
+                <span class="text-muted ms-auto">VARK-tailored</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-top">
+                <div>
+                    <p class="kpi-label">Progress Checkpoints</p>
+                    <p class="kpi-value">@totalLogs</p>
+                </div>
+                <span class="kpi-icon" style="color: #06b6d4;" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                </span>
+            </div>
+            <div class="kpi-meta">
+                <span class="badge bg-info-subtle text-info fw-semibold">Continuous Logs</span>
+                <span class="text-muted ms-auto">Audit verified</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!plansList.Any())
+{
+    <div class="card glass-card text-center p-5 reveal">
+        <div class="empty-icon fs-1 mb-2">📋</div>
+        <h3 class="h5 fw-bold mb-1">No Remedial Plans Active Yet</h3>
+        <p class="text-muted mb-3" style="max-width: 480px; margin: 0 auto;">
+            When students are identified with low assessment marks or declining attendance, create customized 4-week remedial plans to assist their learning.
+        </p>
+        <div>
+            <a class="btn btn-primary" asp-controller="SlowLearners" asp-action="Index">Open Slow Learners Roster</a>
+        </div>
+    </div>
+}
+else
+{
+    <!-- Remedial Plans Table Card -->
+    <div class="card glass-card reveal">
+        <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <div>
+                <h2 class="h5 fw-bold mb-0">Intervention Portfolio</h2>
+                <p class="panel-sub mb-0">Active student roadmaps and ongoing teaching milestone logs.</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="chip chip-blue">@activePlans In Progress</span>
+                <span class="chip chip-emerald">@completedPlans Completed</span>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Student</th>
+                        <th>Subject</th>
+                        <th style="width: 30%;">Plan & Strategy</th>
+                        <th>Started</th>
+                        <th>Checkpoints</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var plan in plansList)
+                    {
+                        var studentName = plan.Student?.FullName ?? "Unknown";
+                        var initials = string.Concat(studentName
+                            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                            .Take(2)
+                            .Select(part => char.ToUpperInvariant(part[0])));
+                        var isCompleted = plan.Status == "Completed";
+
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="avatar" style="width: 38px; height: 38px; border-radius: 10px; background: var(--surface-soft); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--accent);">
+                                        @initials
+                                    </div>
+                                    <div>
+                                        <span class="fw-bold d-block" style="color: var(--text);">@studentName</span>
+                                        <span class="text-muted small">Roll: @(plan.Student?.RollNo ?? "—") · Class @(plan.Student?.ClassName ?? "—")</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="chip chip-blue">
+                                    @(plan.Subject?.Name ?? "General")
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <span class="fw-bold" style="color: var(--text);">@plan.Title</span>
+                                    @if (plan.IsAiGenerated)
+                                    {
+                                        <span class="badge" style="background: rgba(139, 92, 246, 0.12); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.25); font-size: 0.72rem; font-weight: 600; padding: 2px 7px; border-radius: 6px;">
+                                            ✨ AI Tailored
+                                        </span>
+                                    }
+                                </div>
+                                <div class="text-muted small text-truncate" style="max-width: 280px;" title="@plan.Strategy">
+                                    @plan.Strategy
+                                </div>
+                            </td>
+                            <td>
+                                <span class="text-muted small d-inline-flex align-items-center gap-1">
+                                    <svg class="icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                    @plan.StartDate.ToString("dd MMM yyyy")
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge" style="background: var(--surface-soft); color: var(--text); border: 1px solid var(--border); font-weight: 600; padding: 4px 10px; border-radius: 8px;">
+                                    @(plan.Logs?.Count ?? 0) logs
+                                </span>
+                            </td>
+                            <td>
+                                <span class="chip @(isCompleted ? "chip-emerald" : "chip-blue")">
+                                    <span style="width: 6px; height: 6px; border-radius: 50%; background: @(isCompleted ? "#10b981" : "#2563eb");"></span>
+                                    @(isCompleted ? "Completed" : "In Progress")
+                                </span>
+                            </td>
+                            <td class="text-end text-nowrap">
+                                <a class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1" asp-action="Details" asp-route-id="@plan.Id" style="border-radius: 8px;">
+                                    <span>Open Details</span>
+                                    <svg class="icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="9 18 15 12 9 6"></polyline>
+                                    </svg>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

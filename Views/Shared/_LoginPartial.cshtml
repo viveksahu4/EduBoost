@@ -1,0 +1,60 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    var displayName = User.FindFirst("FullName")?.Value;
+    if (string.IsNullOrWhiteSpace(displayName))
+    {
+        displayName = User.Identity?.Name ?? "User";
+    }
+    var profilePic = User.FindFirst("ProfilePicture")?.Value;
+    var initial = displayName.Length > 0 ? displayName.Substring(0, 1).ToUpperInvariant() : "U";
+    var role = User.IsInRole("Admin") ? "Administrator" : "Teacher";
+
+    <div class="dropdown user-menu">
+        <button class="user-chip" type="button" data-bs-toggle="dropdown"
+                aria-expanded="false" aria-label="Open account menu">
+            @if (!string.IsNullOrEmpty(profilePic))
+            {
+                <img src="@profilePic" alt="@displayName" class="user-avatar-img" />
+            }
+            else
+            {
+                <span class="user-avatar" aria-hidden="true">@initial</span>
+            }
+            <span class="user-meta d-none d-md-flex">
+                <span class="user-name">@displayName</span>
+                <span class="user-role">@role</span>
+            </span>
+            <svg class="icon user-caret d-none d-md-block" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="m6 9 6 6 6-6" />
+            </svg>
+        </button>
+
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+                <h6 class="dropdown-header text-truncate">Signed in as @displayName</h6>
+            </li>
+            <li>
+                <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">
+                    Manage account
+                </a>
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+                <form method="post" asp-area="Identity" asp-page="/Account/Logout"
+                      asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button type="submit" class="dropdown-item">Log out</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    <div class="d-flex align-items-center gap-2">
+        <a class="btn btn-ghost btn-sm" asp-area="Identity" asp-page="/Account/Login">Log in</a>
+        <a class="btn btn-glow btn-sm" asp-area="Identity" asp-page="/Account/Register">Sign up</a>
+    </div>
+}

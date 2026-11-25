@@ -1,0 +1,107 @@
+﻿@model EduBoost.Models.RemedialPlan
+@{
+    ViewData["Title"] = "Create Remedial Plan";
+    var student = ViewBag.Student as EduBoost.Models.Student;
+    var methods = ViewBag.Methods as List<EduBoost.Models.InnovativeMethod> ?? new();
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div>
+        <h1 class="h3 mb-1">Create Remedial Plan</h1>
+        <p class="text-muted mb-0">
+            @student?.FullName &middot; Class @student?.ClassName &middot;
+            Attendance @(student?.AttendancePercent.ToString("0.#"))% &middot;
+            Style @student?.LearningStyle
+        </p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-controller="Students" asp-action="Details" asp-route-id="@Model.StudentId">Back to student</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header fw-semibold">Write a plan manually</div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <input type="hidden" asp-for="StudentId" />
+
+                    <div class="mb-3">
+                        <label asp-for="SubjectId" class="form-label">Subject</label>
+                        <select asp-for="SubjectId" class="form-select" asp-items="ViewBag.Subjects">
+                            <option value="">-- Select subject --</option>
+                        </select>
+                        <span asp-validation-for="SubjectId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label"></label>
+                        <input asp-for="Title" class="form-control" placeholder="Fractions recovery plan" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Strategy" class="form-label"></label>
+                        <textarea asp-for="Strategy" class="form-control" rows="7"
+                                  placeholder="Week 1: ...&#10;Week 2: ..."></textarea>
+                        <span asp-validation-for="Strategy" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="StartDate" class="form-label"></label>
+                        <input asp-for="StartDate" class="form-control" type="date" />
+                        <span asp-validation-for="StartDate" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Save plan</button>
+                    <a class="btn btn-outline-secondary" asp-controller="Students" asp-action="Details" asp-route-id="@Model.StudentId">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header fw-semibold">Generate with AI</div>
+            <div class="card-body">
+                <p class="text-muted small">
+                    The AI service writes a four-week plan using the student's scores, attendance and learning style.
+                    If no API key is configured, a built-in fallback plan is used.
+                </p>
+                <form asp-action="GenerateAi" method="post">
+                    <input type="hidden" name="studentId" value="@Model.StudentId" />
+                    <div class="mb-3">
+                        <label for="aiSubjectId" class="form-label">Subject</label>
+                        <select id="aiSubjectId" name="subjectId" class="form-select" asp-items="ViewBag.Subjects">
+                            <option value="">-- Select subject --</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success">Generate AI plan</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header fw-semibold">Methods for @student?.LearningStyle learners</div>
+            <div class="card-body">
+                @if (!methods.Any())
+                {
+                    <p class="text-muted mb-0">No methods in the library match this learning style yet.</p>
+                }
+                else
+                {
+                    <ul class="list-group list-group-flush">
+                    @foreach (var method in methods)
+                    {
+                        <li class="list-group-item px-0">
+                            <div class="fw-semibold">@method.Name</div>
+                            <div class="small text-muted">@method.Description</div>
+                        </li>
+                    }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

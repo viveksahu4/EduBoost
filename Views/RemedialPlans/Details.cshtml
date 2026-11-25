@@ -1,0 +1,121 @@
+﻿@model EduBoost.Models.RemedialPlan
+@{
+    ViewData["Title"] = "Remedial Plan";
+    var logs = Model.Logs.OrderBy(l => l.LogDate).ToList();
+    var firstScore = logs.FirstOrDefault()?.ScoreAfter;
+    var lastScore = logs.LastOrDefault()?.ScoreAfter;
+    var improvement = firstScore.HasValue && lastScore.HasValue ? lastScore.Value - firstScore.Value : (double?)null;
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <h1 class="h3 mb-0">@Model.Title</h1>
+            @if (Model.IsAiGenerated)
+            {
+                <span class="badge bg-info text-dark">AI generated</span>
+            }
+            <span class="badge @(Model.Status == "Completed" ? "bg-success" : "bg-primary")">@Model.Status</span>
+        </div>
+        <p class="text-muted mb-0">
+            <a asp-controller="Students" asp-action="Details" asp-route-id="@Model.StudentId">@Model.Student?.FullName</a>
+            &middot; @Model.Subject?.Name &middot; started @Model.StartDate.ToString("dd MMM yyyy")
+        </p>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary" asp-action="Index">All plans</a>
+        @if (Model.Status != "Completed")
+        {
+            <form asp-action="Complete" method="post">
+                <input type="hidden" name="id" value="@Model.Id" />
+                <button type="submit" class="btn btn-success">Mark completed</button>
+            </form>
+        }
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header fw-semibold">Strategy</div>
+            <div class="card-body">
+                <p class="mb-0" style="white-space: pre-line;">@Model.Strategy</p>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-semibold">Progress logs</span>
+                @if (improvement.HasValue)
+                {
+                    <span class="badge @(improvement >= 0 ? "bg-success" : "bg-danger")">
+                        @(improvement >= 0 ? "+" : "")@improvement.Value.ToString("0.#") since first log
+                    </span>
+                }
+            </div>
+            @if (!logs.Any())
+            {
+                <div class="card-body text-muted">No progress logged yet. Add the first entry below.</div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0 align-middle">
+                        <thead><tr><th>Date</th><th>Notes</th><th>Score after</th></tr></thead>
+                        <tbody>
+                        @foreach (var log in logs.OrderByDescending(l => l.LogDate))
+                        {
+                            <tr>
+                                <td class="text-nowrap">@log.LogDate.ToString("dd MMM yyyy")</td>
+                                <td>@log.Notes</td>
+                                <td>
+                                    <span class="badge @(log.ScoreAfter < 40 ? "bg-danger" : log.ScoreAfter < 60 ? "bg-warning text-dark" : "bg-success")">
+                                        @log.ScoreAfter.ToString("0.#")%
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header fw-semibold">Add progress log</div>
+            <div class="card-body">
+                <form asp-action="AddLog" method="post">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <div class="mb-3">
+                        <label for="logDate" class="form-label">Date</label>
+                        <input id="logDate" name="logDate" type="date" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="scoreAfter" class="form-label">Score after remedial teaching (%)</label>
+                        <input id="scoreAfter" name="scoreAfter" type="number" min="0" max="100" step="0.1" class="form-control" value="0" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea id="notes" name="notes" rows="3" class="form-control"
+                                  placeholder="What was covered? What improved?"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save log</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card border-danger-subtle">
+            <div class="card-header fw-semibold text-danger">Danger zone</div>
+            <div class="card-body">
+                <p class="text-muted small">Deleting the plan also deletes its progress logs.</p>
+                <form asp-action="Delete" method="post"
+                      onsubmit="return confirm('Delete this remedial plan and all of its progress logs?');">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-outline-danger">Delete plan</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

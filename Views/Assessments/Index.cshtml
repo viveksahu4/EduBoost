@@ -1,0 +1,291 @@
+﻿@model IEnumerable<EduBoost.Models.Assessment>
+@{
+    ViewData["Title"] = "Assessments & Examinations";
+    var selectedStudent = ViewData["StudentId"] as int?;
+    var assessmentList = Model.ToList();
+    var totalAssessments = assessmentList.Count;
+    var avgPercentage = totalAssessments > 0 ? assessmentList.Average(a => a.Percentage) : 0;
+    var passCount = assessmentList.Count(a => a.Percentage >= 40);
+    var passRate = totalAssessments > 0 ? (passCount * 100.0 / totalAssessments) : 0;
+    var flaggedCount = assessmentList.Count(a => a.Percentage < 40);
+}
+
+<div class="page-head mb-4">
+    <div>
+        <span class="eyebrow">Academic Performance Tracking</span>
+        <h1 class="text-gradient mb-1">Assessments & Examinations</h1>
+        <p class="text-muted mb-0" style="font-size: 0.92rem;">
+            Record test scores, monitor subject performance, and drive the automated diagnostic engine.
+        </p>
+    </div>
+    <div class="page-head-actions d-flex align-items-center gap-2">
+        <a class="btn btn-outline-secondary d-inline-flex align-items-center gap-2" asp-controller="SlowLearners" asp-action="Index">
+            <svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <span>Slow Learners Hub</span>
+        </a>
+        <a class="btn btn-primary d-inline-flex align-items-center gap-2" asp-action="Create">
+            <svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>+ Record Assessment</span>
+        </a>
+    </div>
+</div>
+
+<!-- Executive Metrics Row -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-top">
+                <div>
+                    <p class="kpi-label">Total Assessments</p>
+                    <p class="kpi-value">@totalAssessments</p>
+                </div>
+                <span class="kpi-icon" style="color: #2563eb;" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                </span>
+            </div>
+            <div class="kpi-meta">
+                <span class="badge bg-primary-subtle text-primary fw-semibold">Continuous Record</span>
+                <span class="text-muted ms-auto">All terms</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-top">
+                <div>
+                    <p class="kpi-label">Class Average</p>
+                    <p class="kpi-value">@avgPercentage.ToString("0.#")%</p>
+                </div>
+                <span class="kpi-icon" style="color: #10b981;" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                </span>
+            </div>
+            <div class="kpi-meta">
+                <span class="badge bg-success-subtle text-success fw-semibold">+4.2% overall</span>
+                <span class="text-muted ms-auto">Passing baseline 40%</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-top">
+                <div>
+                    <p class="kpi-label">Pass Rate</p>
+                    <p class="kpi-value">@passRate.ToString("0.#")%</p>
+                </div>
+                <span class="kpi-icon" style="color: #8b5cf6;" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                </span>
+            </div>
+            <div class="kpi-meta">
+                <span class="badge bg-success-subtle text-success fw-semibold">@passCount passed</span>
+                <span class="text-muted ms-auto">Of @totalAssessments tests</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card">
+            <div class="kpi-top">
+                <div>
+                    <p class="kpi-label">At-Risk (&lt;40%)</p>
+                    <p class="kpi-value" style="color: #ef4444;">@flaggedCount</p>
+                </div>
+                <span class="kpi-icon" style="color: #ef4444;" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                </span>
+            </div>
+            <div class="kpi-meta">
+                <span class="badge bg-danger-subtle text-danger fw-semibold">Remedial Candidate</span>
+                <span class="text-muted ms-auto">Requires Plan</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Toolbar Card -->
+<div class="card glass-card mb-4 reveal">
+    <div class="card-body py-3">
+        <form method="get" class="row g-3 align-items-center">
+            <div class="col-md-5 col-lg-4">
+                <label class="form-label small text-muted mb-1" for="studentFilter">Filter by Student</label>
+                <div class="input-group">
+                    <span class="input-group-text" style="background: var(--surface-soft); border-color: var(--border);">
+                        <svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </span>
+                    <select id="studentFilter" name="studentId" class="form-select" asp-items="ViewBag.Students" onchange="this.form.submit()">
+                        <option value="">All Students (Cohort View)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-lg-5 d-flex align-items-end gap-2 pt-md-4">
+                <button class="btn btn-primary" type="submit">Apply Filter</button>
+                @if (selectedStudent.HasValue)
+                {
+                    <a class="btn btn-outline-secondary" asp-action="Index">Reset Filter</a>
+                    <span class="badge bg-primary-subtle text-primary py-2 px-3">Filtered by Student</span>
+                }
+            </div>
+
+            <div class="col-md-3 col-lg-3 text-md-end pt-md-4">
+                <span class="text-muted small">Showing @totalAssessments record@(totalAssessments == 1 ? "" : "s")</span>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (!assessmentList.Any())
+{
+    <div class="card glass-card text-center p-5 reveal">
+        <div class="empty-icon fs-1 mb-2">📝</div>
+        <h3 class="h5 fw-bold mb-1">No Assessment Records Found</h3>
+        <p class="text-muted mb-3" style="max-width: 480px; margin: 0 auto;">
+            @(selectedStudent.HasValue ? "No assessments found for this student. Clear filter or add an assessment." : "Start tracking student performance by recording exam or test marks.")
+        </p>
+        <div>
+            <a class="btn btn-primary" asp-action="Create">+ Record New Assessment</a>
+        </div>
+    </div>
+}
+else
+{
+    <!-- Assessments Table Card -->
+    <div class="card glass-card reveal">
+        <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <div>
+                <h2 class="h5 fw-bold mb-0">Examination Roster</h2>
+                <p class="panel-sub mb-0">Evaluated scores with risk benchmark categorization.</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="chip chip-emerald">Pass &gt;= 40%</span>
+                <span class="chip chip-rose">At-Risk &lt; 40%</span>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Student</th>
+                        <th>Subject</th>
+                        <th>Exam Type</th>
+                        <th>Date</th>
+                        <th>Score (Raw)</th>
+                        <th style="width: 20%;">Percentage & Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in assessmentList)
+                    {
+                        var studentName = item.Student?.FullName ?? "Unknown";
+                        var initials = string.Concat(studentName
+                            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                            .Take(2)
+                            .Select(part => char.ToUpperInvariant(part[0])));
+                        var isPassing = item.Percentage >= 40;
+                        var isDistinction = item.Percentage >= 75;
+
+                        string subjectChip = "chip-blue";
+                        if (item.Subject?.Name.Contains("Math", StringComparison.OrdinalIgnoreCase) == true) subjectChip = "chip-blue";
+                        else if (item.Subject?.Name.Contains("Sci", StringComparison.OrdinalIgnoreCase) == true) subjectChip = "chip-emerald";
+                        else if (item.Subject?.Name.Contains("Eng", StringComparison.OrdinalIgnoreCase) == true) subjectChip = "chip-purple";
+
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="avatar" style="width: 38px; height: 38px; border-radius: 10px; background: var(--surface-soft); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: var(--accent);">
+                                        @initials
+                                    </div>
+                                    <div>
+                                        <span class="fw-bold d-block" style="color: var(--text);">@studentName</span>
+                                        <span class="text-muted small">Roll: @(item.Student?.RollNo ?? "—") · Class @(item.Student?.ClassName ?? "—")</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="chip @subjectChip">
+                                    @(item.Subject?.Name ?? "General")
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge" style="background: var(--surface-soft); color: var(--text); border: 1px solid var(--border); font-weight: 500; padding: 4px 8px; border-radius: 6px;">
+                                    @item.ExamType
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-muted small d-inline-flex align-items-center gap-1">
+                                    <svg class="icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                    @item.ExamDate.ToString("dd MMM yyyy")
+                                </span>
+                            </td>
+                            <td>
+                                <span class="fw-bold">@item.MarksObtained.ToString("0.#")</span>
+                                <span class="text-muted small">/ @item.MaxMarks.ToString("0.#")</span>
+                            </td>
+                            <td>
+                                @{
+                                    var pctWidth = Math.Clamp(item.Percentage, 0, 100).ToString("0.#", System.Globalization.CultureInfo.InvariantCulture);
+                                }
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="progress-mini flex-grow-1">
+                                        <div class="progress-bar @(isDistinction ? "bg-success" : (isPassing ? "bg-primary" : "bg-danger"))"
+                                             role="progressbar"
+                                             aria-valuenow="@pctWidth" aria-valuemin="0" aria-valuemax="100"
+                                             style="width: @(pctWidth)%"></div>
+                                    </div>
+                                    <span class="chip @(isDistinction ? "chip-emerald" : (isPassing ? "chip-blue" : "chip-rose"))">
+                                        @item.Percentage.ToString("0.#")%
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="text-end text-nowrap">
+                                <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@item.Id" style="border-radius: 8px;" title="Details">
+                                    Details
+                                </a>
+                                <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@item.Id" style="border-radius: 8px;" title="Edit">
+                                    Edit
+                                </a>
+                                <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id" style="border-radius: 8px;" title="Delete">
+                                    Delete
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

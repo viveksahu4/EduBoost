@@ -1,0 +1,31 @@
+﻿@model EduBoost.Models.Student
+@{
+    ViewData["Title"] = "Delete Student";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Delete Student</h1>
+    <a class="btn btn-outline-secondary" asp-action="Index">Back to list</a>
+</div>
+
+<div class="alert alert-danger">
+    <strong>Are you sure?</strong> Deleting this student also deletes their assessments and remedial plans (including progress logs).
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Roll number</dt><dd class="col-sm-9">@Model.RollNo</dd>
+            <dt class="col-sm-3">Name</dt><dd class="col-sm-9">@Model.FullName</dd>
+            <dt class="col-sm-3">Class</dt><dd class="col-sm-9">@Model.ClassName</dd>
+            <dt class="col-sm-3">Attendance</dt><dd class="col-sm-9">@Model.AttendancePercent.ToString("0.#")%</dd>
+            <dt class="col-sm-3">Risk score</dt><dd class="col-sm-9">@Model.RiskScore.ToString("0.0")</dd>
+        </dl>
+
+        <form asp-action="Delete" method="post" class="mt-4">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger">Delete student</button>
+            <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.Id">Cancel</a>
+        </form>
+    </div>
+</div>

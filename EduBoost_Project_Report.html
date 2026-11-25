@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EduBoost Project Report</title>
+<style>
+    @page {
+        size: A4;
+        margin: 20mm;
+    }
+    body {
+        font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+        color: #262626;
+        line-height: 1.6;
+        margin: 0;
+        padding: 40px;
+        background-color: #fff;
+    }
+    .cover-page {
+        text-align: center;
+        page-break-after: always;
+        padding-top: 60px;
+    }
+    .inst-header {
+        font-size: 16pt;
+        font-weight: bold;
+        color: #595959;
+        margin-bottom: 40px;
+        text-transform: uppercase;
+    }
+    .badge-report {
+        display: inline-block;
+        background: #e8f5e9;
+        color: #107c41;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 11pt;
+        margin-bottom: 20px;
+        letter-spacing: 1px;
+    }
+    .title-main {
+        font-size: 26pt;
+        color: #1f4e79;
+        font-weight: bold;
+        margin-bottom: 20px;
+        line-height: 1.25;
+    }
+    .sub-text {
+        font-size: 12pt;
+        color: #595959;
+        font-style: italic;
+        margin-bottom: 60px;
+    }
+    .meta-box {
+        display: flex;
+        justify-content: space-between;
+        text-align: left;
+        margin-top: 80px;
+        border-top: 2px solid #1f4e79;
+        padding-top: 25px;
+    }
+    .meta-col {
+        width: 48%;
+        font-size: 11pt;
+    }
+    .meta-col strong {
+        color: #1f4e79;
+        font-size: 12pt;
+        display: block;
+        margin-bottom: 8px;
+    }
+    .page-break {
+        page-break-after: always;
+    }
+    h1 {
+        color: #1f4e79;
+        font-size: 18pt;
+        border-bottom: 2px solid #1f4e79;
+        padding-bottom: 6px;
+        margin-top: 36px;
+    }
+    h2 {
+        color: #2e75b6;
+        font-size: 14pt;
+        margin-top: 24px;
+    }
+    h3 {
+        color: #595959;
+        font-size: 12pt;
+        margin-top: 18px;
+    }
+    p, li {
+        font-size: 11pt;
+        text-align: justify;
+    }
+    .callout {
+        background: #f2f4f7;
+        border-left: 4px solid #1f4e79;
+        padding: 16px;
+        border-radius: 4px;
+        margin: 18px 0;
+        font-size: 10.5pt;
+    }
+    .callout-title {
+        font-weight: bold;
+        color: #1f4e79;
+        margin-bottom: 6px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 10pt;
+    }
+    th {
+        background-color: #1f4e79;
+        color: #ffffff;
+        font-weight: bold;
+        text-align: left;
+        padding: 10px;
+        border: 1px solid #1f4e79;
+    }
+    td {
+        padding: 9px;
+        border: 1px solid #d9d9d9;
+    }
+    tr:nth-child(even) td {
+        background-color: #f9fafb;
+    }
+    pre {
+        background: #1e1e1e;
+        color: #dcdcdc;
+        padding: 14px;
+        border-radius: 6px;
+        font-family: Consolas, 'Courier New', monospace;
+        font-size: 9.5pt;
+        overflow-x: auto;
+    }
+    .status-pass {
+        color: #107c41;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+
+<div class="cover-page">
+    <div class="inst-header">
+        DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING<br>
+        [YOUR COLLEGE / INSTITUTE NAME HERE]
+    </div>
+    <div class="badge-report">MAJOR PROJECT REPORT</div>
+    <div class="title-main">
+        EduBoost: Intelligent Slow Learner Identification, Remedial Teaching & Capacity Building with Innovative Methods
+    </div>
+    <div class="sub-text">
+        A Project Report submitted in partial fulfillment of the requirements for the award of the degree of<br>
+        Bachelor of Technology / Bachelor of Engineering in Computer Science & Engineering
+    </div>
+
+    <div class="meta-box">
+        <div class="meta-col">
+            <strong>SUBMITTED BY:</strong>
+            Name: [Your Full Name]<br>
+            Roll No: [Your University Roll Number]<br>
+            Branch: Computer Science & Engineering<br>
+            Semester: [8th Semester / Final Year]
+        </div>
+        <div class="meta-col">
+            <strong>UNDER THE GUIDANCE OF:</strong>
+            Guide: [Prof. / Dr. Faculty Name]<br>
+            Designation: [Assistant / Associate Professor]<br>
+            Department: Computer Science & Engg.<br>
+            [College / Institute Name]
+        </div>
+    </div>
+    <div style="margin-top: 40px; font-weight: bold; color: #1f4e79;">
+        ACADEMIC YEAR: 2026 – 2027
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<h1>CERTIFICATE OF AUTHENTICITY</h1>
+<p>
+This is to certify that the project entitled <strong>"Identify Slow Learners for Remedial Teaching and Capacity Building for Innovative Methods (EduBoost)"</strong> submitted by <strong>[Your Full Name] (Roll No: [Your Roll Number])</strong> in partial fulfillment of the requirements for the award of the Degree of Bachelor of Technology in Computer Science & Engineering is an authentic record of the work carried out under my supervision and guidance. The content presented in this report has not been submitted elsewhere for the award of any other degree or diploma.
+</p>
+<div style="display: flex; justify-content: space-between; margin-top: 80px;">
+    <div>
+        <strong>[Faculty Guide Signature]</strong><br>
+        Project Guide<br>
+        Department of CSE
+    </div>
+    <div style="text-align: right;">
+        <strong>[Head of Department Signature]</strong><br>
+        Head of Department<br>
+        Department of CSE
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<h1>ABSTRACT</h1>
+<p>
+In modern pedagogical institutions, student performance evaluation traditionally depends on summative end-of-term examinations. Such evaluation mechanisms fail to account for multi-dimensional performance indicators such as attendance, negative score trajectories, and individualized cognitive learning preferences. As a consequence, academically struggling students ('slow learners') are either diagnosed too late or subjected to generic, one-size-fits-all remedial coaching that yields negligible improvement.
+</p>
+<p>
+<strong>EduBoost</strong> is a production-grade, data-driven academic analytics and remedial teaching platform engineered on Microsoft ASP.NET Core (.NET 10), Entity Framework Core, and SQL Server. The core architecture incorporates an empirical <strong>Multi-Factor Weighted Risk Detection Engine</strong> that evaluates student assessment averages (60% weight), institutional attendance ratios (25% weight), and declining performance trends (15% weight) to flag students in real time.
+</p>
+<p>
+Once flagged, students undergo an embedded <strong>VARK (Visual, Auditory, Reading/Writing, Kinesthetic) Diagnostic Assessment</strong>. Based on their identified cognitive modality, the system correlates suitable interventions from an <strong>Innovative Teaching Methods Library</strong> (Peer Tutoring, Gamified Quizzes, Mind Maps, Storytelling, and Flipped Classrooms) and generates a tailored 4-week remedial plan using a dual-mode AI engine with deterministic offline fallback. Continuous progress logging, accreditation CSV exports, Transact-SQL view/stored procedure mappings in EF Core, OpenAPI/Swagger documentation, and an automated xUnit test suite ensure technical and pedagogical excellence.
+</p>
+
+<div class="page-break"></div>
+
+<h1>CHAPTER 1: INTRODUCTION</h1>
+<h2>1.1 Background and Motivation</h2>
+<p>
+Educational diversity is an inherent characteristic of any academic classroom. While high-performing students quickly grasp conceptual abstractions, slow learners require differentiated pedagogical scaffolding to assimilate curriculum benchmarks. When learning gaps remain unaddressed, students experience severe academic anxiety, leading to course failure, backlogs, and elevated dropout statistics.
+</p>
+<p>
+Accreditation bodies worldwide (including NAAC, NBA, and ABET) mandate that higher education institutions establish a transparent, auditable mechanism to: (1) systematically identify slow learners, (2) formulate personalized remedial interventions, (3) employ innovative pedagogical methodologies, and (4) measure post-remedial outcome improvements. Traditionally, teachers maintain student marks and attendance across disjointed spreadsheets, resulting in delayed identification and lack of auditability. EduBoost solves this systemic problem through an integrated, automated software pipeline.
+</p>
+
+<h2>1.2 Problem Statement</h2>
+<div class="callout">
+    <div class="callout-title">Problem Statement</div>
+    <em>"Developed based on available assessment data for students to identify the slow learners and build innovative methods to help them cope up with educational requirements."</em>
+</div>
+
+<h2>1.3 Project Objectives</h2>
+<ul>
+    <li><strong>Automated Multi-Factor Detection:</strong> Eliminate single-exam bias by computing a composite weighted risk score synthesizing exam marks (60%), attendance records (25%), and negative performance trends (15%).</li>
+    <li><strong>VARK Cognitive Profiling:</strong> Implement an interactive 4-scenario pedagogical questionnaire diagnosing student learning modalities (Visual, Auditory, Reading, Kinesthetic).</li>
+    <li><strong>Capacity Building via Innovative Methods:</strong> Curate a library of evidence-backed innovative teaching strategies tailored to each diagnosed learning style.</li>
+    <li><strong>Dual-Mode Remedial Plan Generation:</strong> Generate tailored 4-week curriculum plans using Anthropic Claude API with a deterministic offline fallback engine ensuring zero downtime.</li>
+    <li><strong>Auditable Progress Tracking:</strong> Track test scores following remedial interventions to quantify academic recovery.</li>
+    <li><strong>Production-Grade .NET Architecture:</strong> Implement ASP.NET Core Identity RBAC, Entity Framework Core with Transact-SQL views and stored procedures, secured REST APIs with DTOs, Swagger documentation, and automated xUnit unit tests.</li>
+</ul>
+
+<div class="page-break"></div>
+
+<h1>CHAPTER 2: LITERATURE SURVEY & FEASIBILITY STUDY</h1>
+<h2>2.1 Comparative Analysis with Existing Systems</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Evaluation Metric</th>
+            <th>Traditional System</th>
+            <th>Generic LMS (Moodle/Canvas)</th>
+            <th>EduBoost Platform</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>Detection Criteria</strong></td>
+            <td>End-of-term score &lt; 40%</td>
+            <td>Gradebook score thresholds</td>
+            <td>Multi-factor weighted index (Marks, Attendance, Trend)</td>
+        </tr>
+        <tr>
+            <td><strong>Detection Timing</strong></td>
+            <td>Post-semester (Late)</td>
+            <td>End of grading terms</td>
+            <td>Real-time, triggered immediately on mark entry</td>
+        </tr>
+        <tr>
+            <td><strong>Pedagogical Profile</strong></td>
+            <td>None (Subjective)</td>
+            <td>None (Generic)</td>
+            <td>VARK Diagnostic Assessment (V, A, R, K)</td>
+        </tr>
+        <tr>
+            <td><strong>Remedial Strategy</strong></td>
+            <td>Generic oral revision</td>
+            <td>Static PDF downloads</td>
+            <td>Personalized 4-week AI + Fallback plan</td>
+        </tr>
+        <tr>
+            <td><strong>Compliance & Audit</strong></td>
+            <td>Manual register notes</td>
+            <td>Raw grade exports</td>
+            <td>One-click Academic Audit CSV + SQL Reporting View</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<h1>CHAPTER 3: SYSTEM ARCHITECTURE & MATHEMATICAL FORMULATION</h1>
+<h2>3.1 Mathematical Risk Engine Formulation</h2>
+<p>
+EduBoost computes an empirical multi-factor risk index R &isin; [0, 100] using the formula:
+</p>
+<div class="callout">
+    <div class="callout-title">Risk Calculation Formula</div>
+    <strong>R = Clamp( (100 - AvgMarks) &times; 0.60 + (100 - Attendance) &times; 0.25 + Max(0, -Trend) &times; 0.15, &nbsp;0, &nbsp;100 )</strong><br><br>
+    Where:<br>
+    &bull; <strong>AvgMarks:</strong> Mean percentage across all completed assessments (0 &le; AvgMarks &le; 100).<br>
+    &bull; <strong>Attendance:</strong> Institutional attendance percentage recorded for the student (0 &le; Attendance &le; 100).<br>
+    &bull; <strong>Trend:</strong> Delta between latest test percentage and earliest test percentage.<br>
+    &bull; <strong>Max(0, -Trend):</strong> Declining trend penalty (e.g. 70% down to 45% adds +3.75 risk points).<br><br>
+    <strong>CLASSIFICATION CRITERIA:</strong><br>
+    A student is flagged as a <strong>Slow Learner</strong> (<code>IsSlowLearner = true</code>) if and only if:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<strong>AvgMarks &lt; 40% &nbsp;&nbsp;&or;&nbsp;&nbsp; RiskScore &ge; 45.0</strong>
+</div>
+
+<h2>3.2 Database Schema</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Table Name</th>
+            <th>Primary Key</th>
+            <th>Foreign Keys</th>
+            <th>Key Attributes & Purpose</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>Students</strong></td>
+            <td>Id (INT)</td>
+            <td>None</td>
+            <td>RollNo (Unique), FullName, ClassName, AttendancePercent, LearningStyle, RiskScore, IsSlowLearner</td>
+        </tr>
+        <tr>
+            <td><strong>Subjects</strong></td>
+            <td>Id (INT)</td>
+            <td>None</td>
+            <td>Name (Unique: Mathematics, Science, English, etc.)</td>
+        </tr>
+        <tr>
+            <td><strong>Assessments</strong></td>
+            <td>Id (INT)</td>
+            <td>StudentId, SubjectId</td>
+            <td>ExamType, MarksObtained, MaxMarks, ExamDate. Cascade deletes with Student/Subject.</td>
+        </tr>
+        <tr>
+            <td><strong>InnovativeMethods</strong></td>
+            <td>Id (INT)</td>
+            <td>None</td>
+            <td>Name, Description, Category, SuitableLearningStyle (Visual, Auditory, Reading, Kinesthetic)</td>
+        </tr>
+        <tr>
+            <td><strong>RemedialPlans</strong></td>
+            <td>Id (INT)</td>
+            <td>StudentId, SubjectId</td>
+            <td>Title, Strategy (4-week plan), IsAiGenerated, Status (Active/Completed), StartDate</td>
+        </tr>
+        <tr>
+            <td><strong>ProgressLogs</strong></td>
+            <td>Id (INT)</td>
+            <td>RemedialPlanId</td>
+            <td>LogDate, Notes, ScoreAfter (post-remedial test percentage)</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<h1>CHAPTER 4: TESTING & QUALITY ASSURANCE</h1>
+<h2>4.1 Automated Unit Test Results (xUnit)</h2>
+<p>
+The test suite <code>EduBoost.Tests</code> was executed on .NET 10 to mathematically verify the risk calculation logic and fallback resilience:
+</p>
+<table>
+    <thead>
+        <tr>
+            <th>Test ID</th>
+            <th>Test Method Name</th>
+            <th>Input Vector</th>
+            <th>Expected Outcome</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>TC-01</td>
+            <td>ApplyRiskCalculation_HighPerformer</td>
+            <td>Marks: 88, 94; Att: 95%</td>
+            <td>Risk &lt; 20; IsSlowLearner = false</td>
+            <td class="status-pass">PASSED</td>
+        </tr>
+        <tr>
+            <td>TC-02</td>
+            <td>ApplyRiskCalculation_FailingMarks</td>
+            <td>Marks: 30, 35; Att: 70%</td>
+            <td>Avg &lt; 40%; IsSlowLearner = true</td>
+            <td class="status-pass">PASSED</td>
+        </tr>
+        <tr>
+            <td>TC-03</td>
+            <td>ApplyRiskCalculation_DecliningTrend</td>
+            <td>Marks: 60 &rarr; 35; Att: 50%</td>
+            <td>Penalty applied; Risk &ge; 45.0</td>
+            <td class="status-pass">PASSED</td>
+        </tr>
+        <tr>
+            <td>TC-04</td>
+            <td>ApplyRiskCalculation_ClampsBoundary</td>
+            <td>Marks: 0, Att: 0% / 100%</td>
+            <td>Risk bounded in [0, 100]</td>
+            <td class="status-pass">PASSED</td>
+        </tr>
+        <tr>
+            <td>TC-05</td>
+            <td>AiPlanService_ReturnsFallbackPlan</td>
+            <td>Mock config (No API key)</td>
+            <td>Valid 4-week structured curriculum</td>
+            <td class="status-pass">PASSED</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="callout">
+    <div class="callout-title">Automated Test Execution Summary</div>
+    <strong>Total Tests:</strong> 5 &nbsp;|&nbsp; <strong>Passed:</strong> 5 (100% Pass Rate) &nbsp;|&nbsp; <strong>Failed:</strong> 0 &nbsp;|&nbsp; <strong>Duration:</strong> 28 ms<br>
+    <strong>Framework:</strong> xUnit (.NETCoreApp, Version=v10.0)
+</div>
+
+<div class="page-break"></div>
+
+<h1>CHAPTER 5: CONCLUSION & FUTURE SCOPE</h1>
+<h2>5.1 Conclusion</h2>
+<p>
+The <strong>EduBoost</strong> platform successfully automates the early identification of slow learners and provides an individualized remedial coaching framework. By replacing delayed single-exam cutoffs with a multi-factor quantitative risk engine, the system ensures timely intervention. Integrating VARK cognitive profiling, innovative teaching libraries, dual-mode AI remedial plans, and longitudinal progress tracking provides an end-to-end framework for student capacity building.
+</p>
+<p>
+From an engineering perspective, the project demonstrates proficiency in modern Microsoft .NET 10 development, including Dependency Injection, Entity Framework Core with native Transact-SQL views and stored procedures, ASP.NET Core Identity with role-based access control, secured RESTful APIs with DTOs, Swagger documentation, and automated xUnit test suites.
+</p>
+
+<h2>5.2 Future Enhancements</h2>
+<ul>
+    <li><strong>Automated Parent Alerts:</strong> Integration of SMS/Email APIs (Twilio/SendGrid) to automatically notify parents when their ward is placed on remedial support.</li>
+    <li><strong>Machine Learning Regression (ML.NET):</strong> Train regression models on multi-year institutional datasets to forecast final semester GPA based on early unit test performance.</li>
+    <li><strong>Mobile Companion App (.NET MAUI):</strong> Build a cross-platform mobile client for Android and iOS allowing teachers to record classroom attendance and marks on the go.</li>
+</ul>
+
+</body>
+</html>

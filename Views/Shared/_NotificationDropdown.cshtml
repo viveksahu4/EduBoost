@@ -1,0 +1,308 @@
+@using EduBoost.Data
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext Db
+
+@{
+    // Server-side pre-rendered notifications so the dropdown renders instantly
+    var slowLearners = await Db.Students
+        .AsNoTracking()
+        .Where(s => s.IsSlowLearner || s.RiskScore >= 50)
+        .OrderByDescending(s => s.RiskScore)
+        .Take(3)
+        .ToListAsync();
+
+    var activePlans = await Db.RemedialPlans
+        .AsNoTracking()
+        .Include(p => p.Student)
+        .Include(p => p.Subject)
+        .Where(p => p.Status == "Active")
+        .OrderByDescending(p => p.StartDate)
+        .Take(2)
+        .ToListAsync();
+
+    var lowAssessments = await Db.Assessments
+        .AsNoTracking()
+        .Include(a => a.Student)
+        .Include(a => a.Subject)
+        .Where(a => a.MaxMarks > 0 && ((double)a.MarksObtained / a.MaxMarks) < 0.45)
+        .OrderByDescending(a => a.ExamDate)
+        .Take(1)
+        .ToListAsync();
+}
+
+<div class="dropdown notification-menu-wrapper position-relative" id="notificationDropdownContainer">
+    <button class="icon-btn notification-toggle position-relative" type="button"
+            id="notificationDropdownBtn" data-bs-toggle="dropdown" data-bs-auto-close="outside"
+            aria-expanded="false" aria-label="Notifications" title="Notifications">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+        </svg>
+        <span class="notif-dot" id="topbarNotifDot" aria-hidden="true"></span>
+    </button>
+
+    <div class="dropdown-menu dropdown-menu-end notification-dropdown shadow-lg border-0 p-0"
+         aria-labelledby="notificationDropdownBtn" id="notificationDropdownMenu">
+        
+        <!-- Dropdown Header -->
+        <div class="notification-header d-flex align-items-center justify-content-between p-3 border-bottom">
+            <div class="d-flex align-items-center gap-2">
+                <span class="notification-title fw-bold">Notifications</span>
+                <span class="badge rounded-pill notif-count-badge" id="notifBadge">5 new</span>
+            </div>
+            <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 notif-mark-all-btn" id="markAllReadBtn">
+                Mark all read
+            </button>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="notification-tabs px-3 pt-2 pb-1 border-bottom d-flex gap-1">
+            <button type="button" class="notif-tab active" data-filter="all">All</button>
+            <button type="button" class="notif-tab" data-filter="alert">Alerts</button>
+            <button type="button" class="notif-tab" data-filter="plan">Plans</button>
+        </div>
+
+        <!-- Notification Feed List -->
+        <div class="notification-body" id="notificationList">
+            
+            @* Slow Learner Alerts *@
+            @{ int sIdx = 1; }
+            @foreach (var s in slowLearners)
+            {
+                var notifId = $"notif-slow-{s.Id}";
+                var timeAgo = sIdx == 1 ? "10m ago" : $"{sIdx * 30}m ago";
+                <a href="@Url.Action("Index", "SlowLearners")" class="notification-item unread" data-id="@notifId" data-category="alert">
+                    <div class="notification-icon-box bg-danger-subtle text-danger">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                            <line x1="12" y1="9" x2="12" y2="13" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                        </svg>
+                    </div>
+                    <div class="notification-content flex-grow-1 min-w-0">
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <span class="notif-item-title text-truncate fw-semibold">High Risk Alert: @s.FullName</span>
+                            <span class="notif-time text-muted small">@timeAgo</span>
+                        </div>
+                        <p class="notif-message mb-0 text-muted small">
+                            Class @s.ClassName (Roll #@s.RollNo) &bull; Risk: <strong>@(s.RiskScore)%</strong> &bull; Att: @(s.AttendancePercent)%
+                        </p>
+                    </div>
+                    <span class="notif-item-dot" title="Unread"></span>
+                </a>
+                sIdx++;
+            }
+
+            @* Active Remedial Plans *@
+            @{ int pIdx = 1; }
+            @foreach (var plan in activePlans)
+            {
+                var notifId = $"notif-plan-{plan.Id}";
+                var timeAgo = $"{pIdx * 2}h ago";
+                <a href="@Url.Action("Index", "RemedialPlans")" class="notification-item unread" data-id="@notifId" data-category="plan">
+                    <div class="notification-icon-box bg-primary-subtle text-primary">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                            <path d="m9 14 2 2 4-4" />
+                        </svg>
+                    </div>
+                    <div class="notification-content flex-grow-1 min-w-0">
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <span class="notif-item-title text-truncate fw-semibold">Active Plan: @(plan.Subject?.Name ?? "Remedial Plan")</span>
+                            <span class="notif-time text-muted small">@timeAgo</span>
+                        </div>
+                        <p class="notif-message mb-0 text-muted small">
+                            @(plan.Student?.FullName ?? "Student") &bull; @plan.Title &bull; Status: @plan.Status
+                        </p>
+                    </div>
+                    <span class="notif-item-dot" title="Unread"></span>
+                </a>
+                pIdx++;
+            }
+
+            @* Low Assessment Score Alert *@
+            @foreach (var a in lowAssessments)
+            {
+                var notifId = $"notif-assess-{a.Id}";
+                var pct = Math.Round(((double)a.MarksObtained / a.MaxMarks) * 100, 1);
+                <a href="@Url.Action("Index", "Assessments")" class="notification-item unread" data-id="@notifId" data-category="alert">
+                    <div class="notification-icon-box bg-warning-subtle text-warning">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="20" x2="18" y2="10" />
+                            <line x1="12" y1="20" x2="12" y2="4" />
+                            <line x1="6" y1="20" x2="6" y2="14" />
+                        </svg>
+                    </div>
+                    <div class="notification-content flex-grow-1 min-w-0">
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <span class="notif-item-title text-truncate fw-semibold">Assessment: @(a.Subject?.Name ?? "Test")</span>
+                            <span class="notif-time text-muted small">Yesterday</span>
+                        </div>
+                        <p class="notif-message mb-0 text-muted small">
+                            @(a.Student?.FullName ?? "Student") scored @a.MarksObtained/@a.MaxMarks (@pct%) in @a.ExamType.
+                        </p>
+                    </div>
+                    <span class="notif-item-dot" title="Unread"></span>
+                </a>
+            }
+
+            @* AI Interventions *@
+            <a href="@Url.Action("Index", "InnovativeMethods")" class="notification-item unread" data-id="notif-ai-methods" data-category="plan">
+                <div class="notification-icon-box bg-info-subtle text-info">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                    </svg>
+                </div>
+                <div class="notification-content flex-grow-1 min-w-0">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                        <span class="notif-item-title text-truncate fw-semibold">AI Recommended Methods</span>
+                        <span class="notif-time text-muted small">1d ago</span>
+                    </div>
+                    <p class="notif-message mb-0 text-muted small">
+                        Tailored remedial strategies available for Kinesthetic and Auditory learners.
+                    </p>
+                </div>
+                <span class="notif-item-dot" title="Unread"></span>
+            </a>
+
+            <!-- Empty State -->
+            <div class="notification-empty py-5 text-center d-none" id="notificationEmptyState">
+                <div class="notif-empty-icon mb-2">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="text-muted">
+                        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                        <line x1="2" y1="2" x2="22" y2="22" />
+                    </svg>
+                </div>
+                <h6 class="fw-semibold text-muted mb-1">All caught up!</h6>
+                <p class="small text-muted mb-0">No unread notifications at this time.</p>
+            </div>
+        </div>
+
+        <!-- Dropdown Footer -->
+        <div class="notification-footer p-2 text-center border-top">
+            <a href="@Url.Action("Index", "SlowLearners")" class="btn btn-sm btn-link text-decoration-none fw-semibold w-100">
+                View all slow learner alerts &rarr;
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const STORAGE_KEY = 'eduboost_read_notifications_v1';
+        
+        function getReadIds() {
+            try {
+                return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveReadIds(ids) {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+            } catch (e) {}
+        }
+
+        function updateNotificationUI() {
+            const readIds = getReadIds();
+            const items = document.querySelectorAll('.notification-item');
+            const topbarDot = document.getElementById('topbarNotifDot');
+            const badge = document.getElementById('notifBadge');
+            let unreadCount = 0;
+
+            items.forEach(item => {
+                const id = item.getAttribute('data-id');
+                if (readIds.includes(id)) {
+                    item.classList.remove('unread');
+                    item.classList.add('read');
+                } else {
+                    item.classList.add('unread');
+                    item.classList.remove('read');
+                    unreadCount++;
+                }
+            });
+
+            if (topbarDot) {
+                topbarDot.style.display = unreadCount > 0 ? 'block' : 'none';
+            }
+
+            if (badge) {
+                if (unreadCount > 0) {
+                    badge.textContent = `${unreadCount} new`;
+                    badge.classList.remove('bg-secondary-subtle', 'text-muted');
+                    badge.classList.add('bg-danger-subtle', 'text-danger');
+                } else {
+                    badge.textContent = '0 new';
+                    badge.classList.remove('bg-danger-subtle', 'text-danger');
+                    badge.classList.add('bg-secondary-subtle', 'text-muted');
+                }
+            }
+        }
+
+        // Initialize on DOM load
+        document.addEventListener('DOMContentLoaded', function () {
+            updateNotificationUI();
+
+            // Mark all read button
+            const markAllBtn = document.getElementById('markAllReadBtn');
+            if (markAllBtn) {
+                markAllBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const items = document.querySelectorAll('.notification-item');
+                    const allIds = Array.from(items).map(el => el.getAttribute('data-id')).filter(Boolean);
+                    saveReadIds(allIds);
+                    updateNotificationUI();
+                });
+            }
+
+            // Click single notification item
+            const items = document.querySelectorAll('.notification-item');
+            items.forEach(item => {
+                item.addEventListener('click', function () {
+                    const id = item.getAttribute('data-id');
+                    if (id) {
+                        const readIds = getReadIds();
+                        if (!readIds.includes(id)) {
+                            readIds.push(id);
+                            saveReadIds(readIds);
+                            updateNotificationUI();
+                        }
+                    }
+                });
+            });
+
+            // Tab filtering (All / Alerts / Plans)
+            const tabs = document.querySelectorAll('.notif-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    const filter = tab.getAttribute('data-filter');
+
+                    let visibleCount = 0;
+                    items.forEach(item => {
+                        const cat = item.getAttribute('data-category');
+                        if (filter === 'all' || cat === filter) {
+                            item.style.display = 'flex';
+                            visibleCount++;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+
+                    const emptyState = document.getElementById('notificationEmptyState');
+                    if (emptyState) {
+                        emptyState.classList.toggle('d-none', visibleCount > 0);
+                    }
+                });
+            });
+        });
+    })();
+</script>

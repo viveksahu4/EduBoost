@@ -1,0 +1,107 @@
+@* Views/Shared/_ChatbotWidget.cshtml - 24/7 EduBoost AI Assistant powered by Google Gemini *@
+
+<div id="eduboostChatWidget" class="eduboost-chat-container">
+    <!-- Floating Launcher Button -->
+    <button type="button" id="chatLauncherBtn" class="chat-launcher-btn" aria-label="Open 24/7 AI Assistant" title="Open 24/7 AI Assistant (Google Gemini)">
+        <span class="launcher-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-chat">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                <circle cx="9" cy="10" r="1" fill="currentColor"></circle>
+                <circle cx="12" cy="10" r="1" fill="currentColor"></circle>
+                <circle cx="15" cy="10" r="1" fill="currentColor"></circle>
+            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-close d-none">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </span>
+        <span class="online-indicator" title="24/7 Online"></span>
+    </button>
+
+    <!-- Chat Window Card -->
+    <div id="chatBoxWindow" class="chat-box-card d-none" role="region" aria-label="EduBoost AI Chatbot">
+        <!-- Header -->
+        <div class="chat-header">
+            <div class="chat-header-info">
+                <div class="bot-avatar">
+                    <span>✨</span>
+                    <span class="online-badge"></span>
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-bold">EduBoost AI Assistant</h6>
+                    <small class="status-subtitle">24/7 Online &middot; Powered by Gemini</small>
+                </div>
+            </div>
+            <div class="chat-header-actions">
+                <button type="button" id="clearChatBtn" class="chat-hdr-btn" title="Clear conversation" aria-label="Clear conversation">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </button>
+                <button type="button" id="closeChatBtn" class="chat-hdr-btn" title="Close" aria-label="Close chat">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Messages Area -->
+        <div class="chat-body" id="chatMessagesArea">
+            <div class="chat-msg bot-msg">
+                <div class="msg-bubble">
+                    <p class="mb-1"><strong>Hello! 👋</strong> I am your <strong>24/7 EduBoost AI Assistant</strong>, connected live via Google Gemini.</p>
+                    <p class="mb-0 small text-muted">I can help Admin &amp; Teachers with slow-learner risk diagnostics, tailored remedial plans, innovative teaching methods, and classroom strategies.</p>
+                </div>
+                <div class="msg-time">Just now</div>
+            </div>
+
+            <!-- Quick Suggestions -->
+            <div class="chat-suggestions" id="chatSuggestions">
+                <div class="suggestions-label">Try asking:</div>
+                <button type="button" class="suggestion-chip" data-prompt="How is the slow learner risk score calculated in EduBoost?">
+                    📐 How is risk calculated?
+                </button>
+                <button type="button" class="suggestion-chip" data-prompt="Suggest 3 innovative teaching methods for Kinesthetic learners struggling in Science.">
+                    🔬 Kinesthetic methods
+                </button>
+                <button type="button" class="suggestion-chip" data-prompt="What should a teacher do if a student has low attendance and failing marks?">
+                    🎯 Attendance &amp; Marks remedy
+                </button>
+                <button type="button" class="suggestion-chip" data-prompt="Help me create a 4-week remedial plan outline.">
+                    📋 4-Week plan outline
+                </button>
+            </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div id="chatTypingIndicator" class="chat-typing-indicator d-none">
+            <div class="typing-bubble">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+            <span class="typing-text">Gemini is thinking…</span>
+        </div>
+
+        <!-- Input Area -->
+        <div class="chat-footer">
+            <form id="chatForm" class="chat-input-form" onsubmit="return false;">
+                <input type="text" id="chatInputMessage" class="form-control chat-input"
+                       placeholder="Ask anything about teaching &amp; EduBoost…"
+                       autocomplete="off" maxlength="1000" />
+                <button type="submit" id="chatSendBtn" class="chat-send-btn" aria-label="Send message" title="Send message">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </form>
+            <div class="chat-disclaimer">
+                <span>Google Gemini 24/7 AI &middot; For Admins &amp; Teachers</span>
+            </div>
+        </div>
+    </div>
+</div>

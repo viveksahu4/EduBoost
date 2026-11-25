@@ -1,0 +1,989 @@
+@{
+    ViewData["Title"] = "System Documentation";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <style>
+        .docs-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 32px;
+            align-items: flex-start;
+            margin-bottom: 60px;
+        }
+
+        @@media (max-width: 992px) {
+            .docs-container {
+                grid-template-columns: 1fr;
+            }
+            .docs-sidebar {
+                position: static !important;
+                max-height: none !important;
+            }
+        }
+
+        .docs-sidebar {
+            position: sticky;
+            top: 90px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+
+        .docs-search-input {
+            width: 100%;
+            padding: 8px 14px 8px 34px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--surface-soft);
+            color: var(--text);
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .docs-search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .docs-nav-group-title {
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            margin: 16px 0 8px 6px;
+        }
+
+        .docs-nav-group-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .docs-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-decoration: none;
+            transition: all 0.15s ease;
+            margin-bottom: 2px;
+        }
+
+        .docs-nav-link:hover {
+            color: var(--primary);
+            background: var(--surface-soft);
+        }
+
+        .docs-nav-link.active {
+            color: var(--primary);
+            background: rgba(37, 99, 235, 0.1);
+            font-weight: 700;
+        }
+
+        .docs-content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            padding: 36px 42px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+            color: var(--text);
+            line-height: 1.68;
+        }
+
+        @@media (max-width: 576px) {
+            .docs-content {
+                padding: 24px 20px;
+            }
+        }
+
+        .docs-section {
+            padding-bottom: 40px;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+            scroll-margin-top: 90px;
+        }
+
+        .docs-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .docs-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .docs-badge-teacher {
+            background: rgba(13, 148, 136, 0.12);
+            color: #0d9488;
+        }
+
+        .docs-badge-admin {
+            background: rgba(99, 102, 241, 0.12);
+            color: #6366f1;
+        }
+
+        .docs-badge-dev {
+            background: rgba(245, 158, 11, 0.12);
+            color: #d97706;
+        }
+
+        .docs-callout {
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+            background: var(--surface-soft);
+        }
+
+        .docs-callout-tip {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.06);
+        }
+
+        .docs-callout-warning {
+            border-left-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.06);
+        }
+
+        .docs-callout-info {
+            border-left-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.06);
+        }
+
+        .code-box {
+            position: relative;
+            background: #0f172a;
+            color: #e2e8f0;
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.86rem;
+            margin: 16px 0;
+            overflow-x: auto;
+        }
+
+        .code-box-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #94a3b8;
+            font-size: 0.74rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .copy-code-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 6px;
+            color: #cbd5e1;
+            font-size: 0.72rem;
+            padding: 3px 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-code-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .step-card {
+            display: flex;
+            gap: 16px;
+            margin: 18px 0;
+        }
+
+        .step-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #ffffff;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.9rem;
+        }
+
+        .api-pill {
+            font-family: monospace;
+            font-size: 0.76rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+        .api-get { background: #dbeafe; color: #1d4ed8; }
+        .api-post { background: #dcfce7; color: #15803d; }
+        .api-put { background: #fef3c7; color: #b45309; }
+        .api-delete { background: #fee2e2; color: #b91c1c; }
+    </style>
+}
+
+<div class="docs-container">
+    <!-- Left Navigation Table of Contents -->
+    <aside class="docs-sidebar">
+        <div class="position-relative">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="position-absolute text-muted" style="top: 11px; left: 12px;">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" class="docs-search-input" id="docsSearchInput" placeholder="Filter documentation topics..." onkeyup="filterDocs()" />
+        </div>
+
+        <div id="docsNavMenu">
+            <div class="docs-nav-group-title">Overview</div>
+            <a href="#quickstart" class="docs-nav-link active">🚀 System Architecture</a>
+            <a href="#core-concepts" class="docs-nav-link">💡 Core Philosophy</a>
+            <a href="#ui-themes" class="docs-nav-link">🌓 UI Shell &amp; Themes</a>
+
+            <div class="docs-nav-group-title">Roles &amp; Workflows</div>
+            <a href="#teacher-guide" class="docs-nav-link">🧑‍🏫 Teacher Guide</a>
+            <a href="#admin-guide" class="docs-nav-link">👑 Administrator Guide</a>
+            <a href="#developer-guide" class="docs-nav-link">💻 Developer Setup</a>
+
+            <div class="docs-nav-group-title">Features &amp; Engines</div>
+            <a href="#risk-engine" class="docs-nav-link">🧠 Diagnostic Risk Engine</a>
+            <a href="#ai-chatbot" class="docs-nav-link">💬 24/7 AI Chatbot (Gemini)</a>
+            <a href="#remedial-plans" class="docs-nav-link">📋 Remedial Action Plans</a>
+            <a href="#vark-modalities" class="docs-nav-link">🎨 VARK Learning Styles</a>
+            <a href="#ai-integration" class="docs-nav-link">✨ AI Plan Generator</a>
+
+            <div class="docs-nav-group-title">Authentication &amp; API</div>
+            <a href="#social-auth-setup" class="docs-nav-link">🔑 Google OAuth Setup</a>
+            <a href="#api-reference" class="docs-nav-link">🔌 REST API Endpoints</a>
+            <a href="#faq-troubleshooting" class="docs-nav-link">❓ FAQ &amp; Troubleshooting</a>
+        </div>
+    </aside>
+
+    <!-- Main Documentation Content Body -->
+    <main class="docs-content">
+        
+        <!-- SECTION 1: ARCHITECTURE OVERVIEW -->
+        <section class="docs-section" id="quickstart">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="docs-badge docs-badge-dev">Architecture</span>
+                <span class="text-muted small">&bull; Updated November 2026</span>
+            </div>
+            <h1 class="display-6 fw-bold mb-3">EduBoost Documentation & Service Hub</h1>
+            <p class="lead text-muted">
+                EduBoost is an intelligent diagnostic learning analytics platform designed to identify academically fragile or slow learners early, match them with targeted remedial teaching methods, and build sustained capacity through multi-week action plans.
+            </p>
+
+            <div class="row g-3 my-3">
+                <div class="col-md-4">
+                    <div class="p-3 rounded-4 border bg-light bg-opacity-50 h-100">
+                        <div class="fw-bold text-dark mb-1">🧑‍🏫 For Teachers</div>
+                        <p class="small text-muted mb-0">Record assessments, observe attendance, calculate learning styles, and run AI remedial plans for struggling students.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 rounded-4 border bg-light bg-opacity-50 h-100">
+                        <div class="fw-bold text-dark mb-1">👑 For Administrators</div>
+                        <p class="small text-muted mb-0">Manage institutional subjects, oversee pedagogical methods library, run cohort diagnostics, and audit risk scores.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 rounded-4 border bg-light bg-opacity-50 h-100">
+                        <div class="fw-bold text-dark mb-1">💻 For Developers</div>
+                        <p class="small text-muted mb-0">Full ASP.NET Core 10 architecture, Entity Framework Core models, Identity Claims, REST APIs, and Swagger docs.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="docs-callout docs-callout-info">
+                <strong>System Access Credentials (Localhost Demo):</strong><br />
+                &bull; <strong>Administrator:</strong> <code>admin@eduboost.local</code> / <code>Admin@123</code><br />
+                &bull; <strong>Teacher:</strong> <code>teacher@eduboost.local</code> / <code>Teacher@123</code><br />
+                &bull; Self-registration automatically assigns the <strong>Teacher</strong> role.
+            </div>
+        </section>
+
+        <!-- SECTION 1B: CORE PHILOSOPHY -->
+        <section class="docs-section" id="core-concepts">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="docs-badge docs-badge-teacher">Philosophy</span>
+            </div>
+            <h2 class="h3 fw-bold mb-3">Core Philosophy &amp; Intervention Pipeline</h2>
+            <p class="text-muted">
+                EduBoost replaces reactive end-of-term failure reports with a continuous four-stage early intervention loop:
+            </p>
+            <div class="row g-3 my-2">
+                <div class="col-md-6">
+                    <div class="p-3 rounded-4 border h-100">
+                        <div class="fw-bold mb-1">1. Early Signal Detection</div>
+                        <p class="small text-muted mb-0">Combines academic averages, attendance percentage, and chronological exam trends to flag vulnerability before final exams.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded-4 border h-100">
+                        <div class="fw-bold mb-1">2. Cognitive Modality Profiling</div>
+                        <p class="small text-muted mb-0">Maps each student to Visual, Auditory, Reading/Writing, or Kinesthetic preferences via an in-app VARK diagnostic quiz.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded-4 border h-100">
+                        <div class="fw-bold mb-1">3. AI-Assisted Remediation</div>
+                        <p class="small text-muted mb-0">Pairs Google Gemini and Anthropic Claude with deterministic pedagogical templates and a 24/7 AI Teaching Assistant.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded-4 border h-100">
+                        <div class="fw-bold mb-1">4. Measurable Recovery Tracking</div>
+                        <p class="small text-muted mb-0">Captures weekly session logs and pre/post-intervention test deltas to verify learning recovery.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 1C: UI SHELL, THEMES & LANDING PORTAL -->
+        <section class="docs-section" id="ui-themes">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="docs-badge docs-badge-dev">UI / UX Architecture</span>
+            </div>
+            <h2 class="h3 fw-bold mb-3">SaaS Shell, Light/Dark Themes &amp; Landing Portal</h2>
+            <p class="text-muted">
+                The platform uses a unified responsive shell (<code>Views/Shared/_Layout.cshtml</code> and <code>wwwroot/css/site.css</code>) with executive KPI cards across all core modules:
+            </p>
+            <ul class="text-muted small">
+                <li><strong>Light &amp; Dark Mode Toggle:</strong> Switches between Clean Off-White (<code>data-theme="light"</code>) and Sleek Charcoal Dark (<code>data-theme="dark"</code>), persisted in <code>localStorage</code> under <code>eduboost-theme</code> and applied pre-paint to prevent theme flash.</li>
+                <li><strong>Collapsible Navigation Sidebar:</strong> Desktop collapse state persists in <code>eduboost-sidebar-collapsed</code>, featuring quick links to <strong>Documentation Hub</strong> (<code>/Documentation</code>) and <strong>API Docs (Swagger)</strong> (<code>/swagger</code>).</li>
+                <li><strong>Modernized Landing Showcase (<code>/Home/Index</code>):</strong> Built in <code>Views/Home/Index.cshtml</code> and <code>wwwroot/css/home.css</code> with a 3D floating analytics preview card, one-click demo credential copy chips, a Bento capabilities grid, and a direct <strong>Ask 24/7 AI</strong> hero trigger.</li>
+                <li><strong>Split-Card Auth Pages:</strong> <code>Login.cshtml</code> and <code>Register.cshtml</code> use <code>_AuthLayout.cshtml</code> and <code>wwwroot/css/auth.css</code> with a 24/7 AI Assistant banner and simulated/live social SSO modal.</li>
+                <li><strong>Live Notification Center:</strong> <code>_NotificationDropdown.cshtml</code> polls <code>GET /api/notifications</code> for high-risk student alerts, active remedial plans, and low assessment warnings.</li>
+            </ul>
+        </section>
+
+        <!-- SECTION 2: TEACHER GUIDE -->
+        <section class="docs-section" id="teacher-guide">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="docs-badge docs-badge-teacher">Teacher Guide</span>
+            </div>
+            <h2 class="h3 fw-bold mb-3">Teacher Operations & Daily Workflow</h2>
+            <p class="text-muted">
+                As an educator, EduBoost helps you identify struggling learners before they fail exams, pinpointing root causes across attendance, test trends, and individual learning modalities.
+            </p>
+
+            <h4 class="h5 fw-bold mt-4 mb-3">Standard Step-by-Step Workflow:</h4>
+
+            <div class="step-card">
+                <div class="step-num">1</div>
+                <div>
+                    <h5 class="h6 fw-bold mb-1">Enrolling Students</h5>
+                    <p class="text-muted small mb-0">Navigate to <strong>Students &rarr; + Add Student</strong>. Record the student's Roll Number, Full Name, Class/Section, Parent Email, and Attendance Percentage.</p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-num">2</div>
+                <div>
+                    <h5 class="h6 fw-bold mb-1">Recording Assessments</h5>
+                    <p class="text-muted small mb-0">Go to <strong>Assessments &rarr; + Record Marks</strong>. Select the student, subject (Mathematics, Science, English), exam type (Surprise Test, Midterm, Quiz), and marks obtained against maximum marks. The system automatically calculates percentage and registers the exam date.</p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-num">3</div>
+                <div>
+                    <h5 class="h6 fw-bold mb-1">Identifying Slow Learners</h5>
+                    <p class="text-muted small mb-0">Visit the <strong>Slow Learners</strong> dashboard. Any student with an average percentage below 40% or a composite Risk Score &ge; 45% is flagged automatically with an alert icon.</p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-num">4</div>
+                <div>
+                    <h5 class="h6 fw-bold mb-1">Determining Learning Modality (VARK Assessment)</h5>
+                    <p class="text-muted small mb-0">Open the student details page (<code>/Students/Details/{id}</code>) to conduct the 4-question VARK quiz. Identifies whether the student learns best through <strong>Visual</strong>, <strong>Auditory</strong>, <strong>Reading/Writing</strong>, or <strong>Kinesthetic (Hands-on)</strong> methods.</p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-num">5</div>
+                <div>
+                    <h5 class="h6 fw-bold mb-1">Creating & Executing a Remedial Plan</h5>
+                    <p class="text-muted small mb-0">Click <strong>Create Remedial Plan</strong> from the student's profile. Choose an innovative teaching strategy from the library or click <strong>✨ Generate with AI</strong> to generate a structured 4-week remedial agenda tailored to the student's learning style.</p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-num">6</div>
+                <div>
+                    <h5 class="h6 fw-bold mb-1">Tracking Progress Logs</h5>
+                    <p class="text-muted small mb-0">Each week, record a <code>ProgressLog</code> inside the active remedial plan (topics covered, intervention notes, and post-intervention test score). Once target score is reached, mark the plan as <strong>Completed</strong>.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: ADMINISTRATOR GUIDE -->
+        <section class="docs-section" id="admin-guide">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="docs-badge docs-badge-admin">Admin Guide</span>
+            </div>
+            <h2 class="h3 fw-bold mb-3">Administrator Governance & Institution Setup</h2>
+            <p class="text-muted">
+                Administrators oversee institutional master data, configure pedagogical catalogs, run school-wide cohort diagnostics, and audit teacher intervention records.
+            </p>
+
+            <div class="table-responsive my-3">
+                <table class="table table-bordered table-sm align-middle small">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Administrative Capability</th>
+                            <th>Route</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Subject Master Catalog</strong></td>
+                            <td><code>/Subjects</code></td>
+                            <td>Add, update, or retire academic disciplines (e.g., Mathematics, Physics, English).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Innovative Methods Library</strong></td>
+                            <td><code>/InnovativeMethods</code></td>
+                            <td>Curate teaching strategies (Peer Tutoring, Gamified Quizzes, Mind Mapping) categorized by learning styles.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cohort Detection Trigger</strong></td>
+                            <td><code>/SlowLearners/RunDetection</code></td>
+                            <td>Execute a school-wide recalculation of risk scores across all active students and assessments.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CSV Performance Export</strong></td>
+                            <td><code>/SlowLearners/ExportCsv</code></td>
+                            <td>Download school-wide diagnostic reports generated from the <code>vw_StudentPerformance</code> reporting view.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>User & Role Governance</strong></td>
+                            <td><code>/Identity/Account</code></td>
+                            <td>Promote registered teachers to Admin, review profile claims, and audit security settings.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="docs-callout docs-callout-warning">
+                <strong>Admin Protection Note:</strong> The <code>/Subjects</code> and <code>/InnovativeMethods</code> creation/editing routes are restricted with <code>[Authorize(Roles = "Admin")]</code>. Teachers attempting to access these endpoints receive an HTTP 403 Forbidden.
+            </div>
+        </section>
+
+        <!-- SECTION 3B: DEVELOPER SETUP -->
+        <section class="docs-section" id="developer-guide">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="docs-badge docs-badge-dev">Developer Guide</span>
+            </div>
+            <h2 class="h3 fw-bold mb-3">Developer Environment &amp; Solution Architecture</h2>
+            <p class="text-muted">
+                EduBoost targets <strong>.NET 10</strong> with Entity Framework Core, SQL Server LocalDB, ASP.NET Core Identity, Swashbuckle OpenAPI, and an xUnit test suite in <code>tests/EduBoost.Tests</code>.
+            </p>
+
+            <div class="table-responsive my-3">
+                <table class="table table-bordered table-sm align-middle small">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Folder / File</th>
+                            <th>Responsibility</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>Program.cs</code></td>
+                            <td>Registers DbContext, Identity + Roles, optional Google OAuth, Session, <code>ISlowLearnerService</code>, <code>IAiPlanService</code> (25s timeout), <code>IGeminiChatService</code> (7s timeout), Swagger, and startup seeding.</td>
+                        </tr>
+                        <tr>
+                            <td><code>Controllers/Api/</code></td>
+                            <td><code>StudentsApiController.cs</code> (<code>/api/students</code>) &amp; <code>ChatbotController.cs</code> (<code>/api/chatbot</code>).</td>
+                        </tr>
+                        <tr>
+                            <td><code>Services/</code></td>
+                            <td><code>SlowLearnerService.cs</code>, <code>AiPlanService.cs</code>, and <code>GeminiChatService.cs</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>Data/Sql/ReportingObjects.sql</code></td>
+                            <td>Defines SQL view <code>vw_StudentPerformance</code> and stored procedure <code>sp_GetSlowLearners</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>Middleware/RequestLoggingMiddleware.cs</code></td>
+                            <td>Logs request method, path, status code, and execution duration.</td>
+                        </tr>
+                        <tr>
+                            <td><code>tests/EduBoost.Tests/</code></td>
+                            <td>xUnit unit tests (<code>SlowLearnerRiskTests.cs</code>) validating risk scoring, clamping, and AI fallback behavior.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="code-box">
+                <div class="code-box-header">
+                    <span>PowerShell / CLI Quickstart</span>
+                </div>
+                <pre class="mb-0"><code># Restore &amp; build solution
+dotnet build
+
+# Run application (default route: /Dashboard, Swagger: /swagger)
+dotnet run
+
+# Run xUnit unit tests
+dotnet test
+
+# Apply EF Core migrations manually
+dotnet ef database update</code></pre>
+            </div>
+        </section>
+
+        <!-- SECTION 4: DIAGNOSTIC RISK ENGINE -->
+        <section class="docs-section" id="risk-engine">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="docs-badge docs-badge-dev">Engine Spec</span>
+            </div>
+            <h2 class="h3 fw-bold mb-3">Diagnostic Risk Engine Algorithm</h2>
+            <p class="text-muted">
+                EduBoost evaluates students using a multi-factor weighted predictive risk score implemented in <code>Services/SlowLearnerService.cs</code> (<code>ApplyRiskCalculation</code>).
+            </p>
+
+            <div class="p-3 rounded-4 border bg-dark text-white my-3">
+                <div class="text-uppercase small text-muted fw-bold mb-2">Mathematical Risk Formula (Clamped 0–100):</div>
+                <div class="font-monospace fs-6" style="color: #38bdf8;">
+                    RiskScore = Clamp(((100 - AvgMarks) &times; 0.60) + ((100 - Attendance) &times; 0.25) + (Max(0, -(Last - First)) &times; 0.15), 0, 100)
+                </div>
+            </div>
+
+            <h5 class="h6 fw-bold mt-4 mb-2">Factor Breakdowns:</h5>
+            <ul class="text-muted small">
+                <li><strong>Marks Deficit (60% Weight):</strong> <code>100 - AveragePercentage</code> across all recorded assessments for the student.</li>
+                <li><strong>Attendance Deficit (25% Weight):</strong> <code>100 - AttendancePercent</code>. Low attendance significantly increases vulnerability.</li>
+                <li><strong>Trajectory Trend Deficit (15% Weight):</strong> Compares the chronological latest score against the first score (<code>trend = marks.Last() - marks.First()</code>). When declining, <code>Max(0, -trend)</code> is weighted at 15%; if stable or improving, penalty is <code>0</code>.</li>
+                <li><strong>Zero-Assessment Baseline:</strong> When no assessments exist yet, risk defaults to <code>(100 - AttendancePercent) &times; 0.25</code>.</li>
+            </ul>
+
+            <div class="docs-callout docs-callout-tip">
+                <strong>Slow Learner Flag Condition:</strong><br />
+                A student is flagged as <code>IsSlowLearner = true</code> when:
+                <br />
+                &bull; <code>AveragePercentage &lt; 40.0%</code> OR<br />
+                &bull; <code>RiskScore &ge; 45.0</code>
+            </div>
+        </section>
+
+        <!-- SECTION 4B: 24/7 AI ASSISTANT CHATBOT -->
+        <section class="docs-section" id="ai-chatbot">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="docs-badge docs-badge-dev">New Feature</span>
+                <span class="docs-badge docs-badge-teacher">24/7 AI Co-Pilot</span>
+            </div>
+            <h2 class="h3 fw-bold mb-3">24/7 AI Assistant Chatbot (Google Gemini)</h2>
+            <p class="text-muted">
+                EduBoost includes a global floating AI Teaching Assistant available across every page via <code>Views/Shared/_ChatbotWidget.cshtml</code>, powered by <code>Services/GeminiChatService.cs</code> and exposed via <code>Controllers/Api/ChatbotController.cs</code>.
+            </p>
+
+            <h5 class="h6 fw-bold mt-4 mb-2">3-Tier Low-Latency Execution Pipeline:</h5>
+            <div class="step-card">
+                <div class="step-num">1</div>
+                <div>
+                    <h5 class="h6 fw-bold mb-1">Tier 1: Instant Engine (&lt; 20ms)</h5>
+                    <p class="text-muted small mb-0"><code>TryGetInstantResponse</code> resolves common queries locally without network latency (risk score calculation, greetings, 4-week plan outlines, kinesthetic methods, low attendance + failing marks) returning <code>modelUsed: "eduboost-instant-engine"</code>.</p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-num">2</div>
+                <div>
+                    <h5 class="h6 fw-bold mb-1">Tier 2: Live Google Gemini API (6s Timeout)</h5>
+                    <p class="text-muted small mb-0">Calls <code>generativelanguage.googleapis.com/v1beta/models/{model}:generateContent</code> (default <code>gemini-3.5-flash-lite</code>) with a 3-minute cached school stats system prompt (Total Students, Slow Learners, Active Plans), user role/email context, and up to the last 4 turns of history (<code>temperature = 0.6</code>, <code>maxOutputTokens = 450</code>).</p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-num">3</div>
+                <div>
+                    <h5 class="h6 fw-bold mb-1">Tier 3: Pedagogical Fallback</h5>
+                    <p class="text-muted small mb-0">If the external Gemini API times out or encounters network issues, <code>BuildPedagogicalFallback</code> returns actionable remedial guidance with <code>modelUsed: "edu-fast-fallback"</code> so the chat experience never breaks.</p>
+                </div>
+            </div>
+
+            <h5 class="h6 fw-bold mt-4 mb-2">Frontend Widget Capabilities (<code>wwwroot/js/chatbot.js</code> &amp; <code>wwwroot/css/chatbot.css</code>):</h5>
+            <ul class="text-muted small">
+                <li>Floating bottom-right launcher with live pulse indicator; also triggered from the Home Hero <strong>✨ Ask 24/7 AI</strong> button.</li>
+                <li>Maintains up to 20 turns of client-side <code>conversationHistory</code>, quick prompt suggestion chips, typing indicator, conversation reset button, and sanitized Markdown formatting.</li>
+                <li>Full support for both Light and Dark themes.</li>
+            </ul>
+
+            <div class="code-box">
+                <div class="code-box-header">
+                    <span>appsettings.json (Gemini Configuration)</span>
+                </div>
+                <pre class="mb-0"><code>{
+  "Gemini": {
+    "ApiKey": "YOUR_GOOGLE_GEMINI_API_KEY",
+    "Model": "gemini-3.5-flash-lite",
+    "FallbackModel": "gemini-3.5-flash"
+  }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- SECTION 4C: REMEDIAL ACTION PLANS -->
+        <section class="docs-section" id="remedial-plans">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="docs-badge docs-badge-teacher">Workflow</span>
+            </div>
+            <h2 class="h3 fw-bold mb-3">Remedial Action Plans &amp; Progress Logs</h2>
+            <p class="text-muted">
+                Managed by <code>Controllers/RemedialPlansController.cs</code>, remedial plans link a flagged student, target subject, and innovative teaching method into a structured 4-week intervention lifecycle:
+            </p>
+            <ul class="text-muted small">
+                <li><strong>Plan Creation (<code>/RemedialPlans/Create</code>):</strong> Select a student, subject, and VARK-matched method, or invoke <strong>✨ Generate with AI</strong>.</li>
+                <li><strong>Weekly Progress Logs (<code>ProgressLog</code>):</strong> Record session topics, teacher observations, and post-intervention assessment scores (<code>ScoreAfter</code>) inside <code>/RemedialPlans/Details/{id}</code>.</li>
+                <li><strong>Completion &amp; KPIs:</strong> Plans track <code>Active</code> vs <code>Completed</code> status and surface real-time alerts in the topbar notification dropdown.</li>
+            </ul>
+        </section>
+
+        <!-- SECTION 4D: VARK LEARNING MODALITIES -->
+        <section class="docs-section" id="vark-modalities">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="docs-badge docs-badge-teacher">Pedagogy</span>
+            </div>
+            <h2 class="h3 fw-bold mb-3">VARK Learning Modalities &amp; Methods Library</h2>
+            <p class="text-muted">
+                Every student profile (<code>/Students/Details/{id}</code>) includes an interactive 4-question VARK diagnostic quiz that classifies learners and filters recommended strategies in <code>/InnovativeMethods</code>:
+            </p>
+            <div class="row g-3 my-2">
+                <div class="col-md-6">
+                    <div class="p-3 rounded-4 border h-100">
+                        <div class="fw-bold mb-1">👁️ Visual (V)</div>
+                        <p class="small text-muted mb-0">Mind maps, color-coded flowcharts, concept diagrams, and visual graphic organizers.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded-4 border h-100">
+                        <div class="fw-bold mb-1">🎧 Auditory (A)</div>
+                        <p class="small text-muted mb-0">Socratic questioning, peer tutoring discussions, verbal recaps, and oral Q&amp;A.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded-4 border h-100">
+                        <div class="fw-bold mb-1">📖 Reading / Writing (R)</div>
+                        <p class="small text-muted mb-0">Structured summary sheets, guided textbook notes, checklists, and written drills.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded-4 border h-100">
+                        <div class="fw-bold mb-1">🔬 Kinesthetic (K)</div>
+                        <p class="small text-muted mb-0">Tactile 3D models, movement stations, gamified quizzes, and role-play enactments.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4E: AI PLAN GENERATOR -->
+        <section class="docs-section" id="ai-integration">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="docs-badge docs-badge-dev">Multi-Provider AI</span>
+            </div>
+            <h2 class="h3 fw-bold mb-3">AI Remedial Plan Generator (<code>AiPlanService</code>)</h2>
+            <p class="text-muted">
+                <code>Services/AiPlanService.cs</code> (25-second <code>HttpClient</code> timeout) supports a multi-provider resolution chain so plan generation stays resilient in both online and offline environments:
+            </p>
+            <ol class="text-muted small">
+                <li><strong>Primary — Google Gemini:</strong> If <code>Gemini:ApiKey</code> is present, requests a 4-week plan from <code>Gemini:Model</code> (<code>gemini-3.5-flash-lite</code>) tailored to student name, subject, average score, attendance, and VARK style.</li>
+                <li><strong>Secondary — Anthropic Claude:</strong> If Gemini is unconfigured or fails, falls through to Anthropic Messages API (<code>Ai:ApiKey</code>, <code>Ai:Model</code> e.g. <code>claude-sonnet-4-5</code>).</li>
+                <li><strong>Offline Deterministic Fallback:</strong> If neither key is configured or requests fail, <code>FallbackPlan(subject, learningStyle)</code> immediately returns a structured 4-week schedule.</li>
+            </ol>
+        </section>
+
+        <!-- SECTION 5: GOOGLE OAUTH CLOUD SETUP -->
+        <section class="docs-section" id="social-auth-setup">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="docs-badge docs-badge-dev">Google Cloud Guide</span>
+            </div>
+            <h2 class="h3 fw-bold mb-3">How to Enable Live Google OAuth in EduBoost</h2>
+            <p class="text-muted">
+                EduBoost currently includes an out-of-the-box simulated SSO experience so you can immediately test one-click sign-in with Google, Apple, Facebook, and X. If you want to connect real live Google Cloud OAuth, follow these exact steps:
+            </p>
+
+            <div class="step-card">
+                <div class="step-num">1</div>
+                <div>
+                    <h5 class="h6 fw-bold mb-1">Open Google Cloud Console</h5>
+                    <p class="text-muted small mb-0">Visit <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">console.cloud.google.com</a> and sign in with your Google account. Create a new project (e.g. <code>EduBoost-Auth</code>).</p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-num">2</div>
+                <div>
+                    <h5 class="h6 fw-bold mb-1">Configure OAuth Consent Screen</h5>
+                    <p class="text-muted small mb-0">Go to <strong>APIs & Services &rarr; OAuth consent screen</strong>. Select <strong>External</strong>, enter App Name ("EduBoost"), user support email, and save.</p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-num">3</div>
+                <div>
+                    <h5 class="h6 fw-bold mb-1">Create OAuth Client ID Credentials</h5>
+                    <p class="text-muted small mb-0">
+                        Go to <strong>APIs & Services &rarr; Credentials &rarr; Create Credentials &rarr; OAuth client ID</strong>.<br />
+                        &bull; Application type: <strong>Web application</strong><br />
+                        &bull; Name: <code>EduBoost Web Client</code><br />
+                        &bull; Authorized redirect URIs: <code>http://localhost:5168/signin-google</code>
+                    </p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-num">4</div>
+                <div>
+                    <h5 class="h6 fw-bold mb-1">Copy Keys into appsettings.json</h5>
+                    <p class="text-muted small mb-0">Google will display your <strong>Client ID</strong> and <strong>Client Secret</strong>. Paste them into <code>appsettings.json</code>:</p>
+                </div>
+            </div>
+
+            <div class="code-box">
+                <div class="code-box-header">
+                    <span>appsettings.json</span>
+                    <button class="copy-code-btn" onclick="navigator.clipboard.writeText('{\n  \"Authentication\": {\n    \"Google\": {\n      \"ClientId\": \"YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com\",\n      \"ClientSecret\": \"GOCSPX-YOUR_CLIENT_SECRET\"\n    }\n  }\n}')">Copy</button>
+                </div>
+                <pre class="mb-0"><code>{
+  "Authentication": {
+    "Google": {
+      "ClientId": "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
+      "ClientSecret": "GOCSPX-YOUR_CLIENT_SECRET"
+    }
+  }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- SECTION 6: DEVELOPER & REST API -->
+        <section class="docs-section" id="api-reference">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="docs-badge docs-badge-dev">Developer Spec</span>
+            </div>
+            <h2 class="h3 fw-bold mb-3">Developer Setup & REST API Reference</h2>
+            <p class="text-muted">
+                EduBoost exposes clean JSON endpoints for integrations, mobile clients, and automated testing. Interactive documentation is also live at <code>/swagger</code>.
+            </p>
+
+            <div class="table-responsive my-3">
+                <table class="table table-bordered table-sm align-middle small">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Method</th>
+                            <th>Endpoint</th>
+                            <th>Access</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="api-pill api-get">GET</span></td>
+                            <td><code>/api/students</code></td>
+                            <td>Authenticated</td>
+                            <td>Returns paginated/searchable list of all students.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="api-pill api-get">GET</span></td>
+                            <td><code>/api/students/slow</code></td>
+                            <td>Authenticated</td>
+                            <td>Returns list of students currently flagged as slow learners.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="api-pill api-get">GET</span></td>
+                            <td><code>/api/students/{id}</code></td>
+                            <td>Authenticated</td>
+                            <td>Returns single student profile with assessments and learning style.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="api-pill api-post">POST</span></td>
+                            <td><code>/api/students</code></td>
+                            <td>Authenticated</td>
+                            <td>Creates a new student record.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="api-pill api-put">PUT</span></td>
+                            <td><code>/api/students/{id}</code></td>
+                            <td>Authenticated</td>
+                            <td>Updates attendance, contact details, or learning style.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="api-pill api-delete">DELETE</span></td>
+                            <td><code>/api/students/{id}</code></td>
+                            <td>Admin Only</td>
+                            <td>Deletes a student record and cascades related remedial plans.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="api-pill api-get">GET</span></td>
+                            <td><code>/api/notifications</code></td>
+                            <td>Authenticated</td>
+                            <td>Returns active risk alerts, ongoing remedial plans, and low assessment warnings.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="api-pill api-post">POST</span></td>
+                            <td><code>/api/chatbot/message</code></td>
+                            <td>Public / Role-aware</td>
+                            <td>Sends user message + optional <code>history</code> to the 3-tier Gemini AI Assistant and returns <code>ChatResponseDto</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="api-pill api-get">GET</span></td>
+                            <td><code>/api/chatbot/status</code></td>
+                            <td>Public / Role-aware</td>
+                            <td>Returns chatbot health status, AI provider metadata, and current user role.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="api-pill api-get">GET</span></td>
+                            <td><code>/SlowLearners/FromStoredProcedure</code></td>
+                            <td>Authenticated</td>
+                            <td>Executes SQL stored procedure <code>sp_GetSlowLearners</code> (optional <code>?minRisk=45</code>).</td>
+                        </tr>
+                        <tr>
+                            <td><span class="api-pill api-get">GET</span></td>
+                            <td><code>/swagger</code></td>
+                            <td>Public</td>
+                            <td>Interactive OpenAPI / Swagger UI specification for all REST endpoints.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h5 class="h6 fw-bold mt-4 mb-2">Common CLI Commands for Developers:</h5>
+            <div class="code-box">
+                <div class="code-box-header">
+                    <span>PowerShell / Terminal</span>
+                </div>
+                <pre class="mb-0"><code># Build solution
+dotnet build
+
+# Run application daemon
+dotnet run
+
+# Execute unit and integration tests
+dotnet test
+
+# Update SQL LocalDB Migrations
+dotnet ef database update</code></pre>
+            </div>
+        </section>
+
+        <!-- SECTION 7: FAQ & TROUBLESHOOTING -->
+        <section class="docs-section" id="faq-troubleshooting">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="docs-badge docs-badge-teacher">FAQ</span>
+            </div>
+            <h2 class="h3 fw-bold mb-3">Frequently Asked Questions (FAQ)</h2>
+
+            <div class="accordion accordion-flush" id="faqAccordion">
+                <div class="accordion-item border-bottom">
+                    <h2 class="accordion-header" id="faq1">
+                        <button class="accordion-button collapsed fw-semibold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
+                            How do I change my profile photo or upload from device?
+                        </button>
+                    </h2>
+                    <div id="collapse1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body small text-muted">
+                            Click on your username chip in the top-right corner of the dashboard and select <strong>Manage Account</strong> (or navigate to <code>/Identity/Account/Manage</code>). Click your avatar or the <strong>Change Photo</strong> button. You can choose <strong>Upload from Device</strong> (PNG/JPG up to 5MB) or paste a <strong>Google Drive / Image URL</strong>. The photo updates portal-wide instantly.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item border-bottom">
+                    <h2 class="accordion-header" id="faq2">
+                        <button class="accordion-button collapsed fw-semibold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">
+                            How does the Notification Bell work?
+                        </button>
+                    </h2>
+                    <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body small text-muted">
+                            The notification bell in the topbar monitors high-risk student alerts, pending remedial plans, and exam anomalies. When clicked, it opens a clean dropdown with filters (All, Alerts, Plans) and a "Mark all read" button that clears the red badge across all your devices.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item border-bottom">
+                    <h2 class="accordion-header" id="faq3">
+                        <button class="accordion-button collapsed fw-semibold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3">
+                            How do the AI Plan Generator and 24/7 AI Chatbot handle missing keys or offline mode?
+                        </button>
+                    </h2>
+                    <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body small text-muted">
+                            <code>AiPlanService.cs</code> checks <code>Gemini:ApiKey</code> first, falls back to Anthropic Claude (<code>Ai:ApiKey</code>), and finally uses a built-in deterministic 4-week VARK template. Similarly, <code>GeminiChatService.cs</code> resolves common EduBoost queries in under 20ms via its local instant engine and falls back to <code>BuildPedagogicalFallback</code> if the 6-second Gemini API call times out or fails.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item border-bottom">
+                    <h2 class="accordion-header" id="faq4">
+                        <button class="accordion-button collapsed fw-semibold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4">
+                            How is Light / Dark mode persisted across pages?
+                        </button>
+                    </h2>
+                    <div id="collapse4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body small text-muted">
+                            Clicking the theme toggle button in the topbar saves your selection (<code>light</code> or <code>dark</code>) in <code>localStorage</code> under <code>eduboost-theme</code>. An inline pre-paint script in <code>_Layout.cshtml</code> reads this preference before CSS loads, preventing any flash of the wrong theme across navigation.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+@section Scripts {
+    <script>
+        function filterDocs() {
+            const input = document.getElementById('docsSearchInput').value.toLowerCase();
+            const links = document.querySelectorAll('#docsNavMenu .docs-nav-link');
+            
+            links.forEach(link => {
+                const text = link.textContent.toLowerCase();
+                link.style.display = text.includes(input) ? 'flex' : 'none';
+            });
+        }
+
+        // Active link spy on scroll
+        window.addEventListener('scroll', function () {
+            const sections = document.querySelectorAll('.docs-section');
+            const navLinks = document.querySelectorAll('#docsNavMenu .docs-nav-link');
+            let current = '';
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 120;
+                if (pageYOffset >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+}

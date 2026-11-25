@@ -1,0 +1,531 @@
+@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Sign Up";
+    Layout = "/Views/Shared/_AuthLayout.cshtml";
+}
+
+<div class="auth-card">
+    <!-- Left Column: Registration Form -->
+    <div class="auth-form-column">
+        <!-- Brand -->
+        <a class="auth-brand" href="/">
+            <div class="auth-brand-logo">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>
+            </div>
+            <span class="auth-brand-text">Edu<span>Boost</span></span>
+        </a>
+
+        <!-- Form Body -->
+        <div>
+            <div class="auth-header">
+                <h1 class="auth-title">Welcome to EduBoost</h1>
+                <p class="auth-subtitle">Start your experience with EduBoost by signing in or signing up.</p>
+            </div>
+
+            <!-- 24/7 AI Co-Pilot Highlight Banner -->
+            <div class="auth-ai-banner">
+                <div class="ai-banner-left">
+                    <span class="ai-banner-icon">✨</span>
+                    <div class="ai-banner-text">
+                        <strong>24/7 AI Teaching Assistant Included</strong>
+                        <small>Powered by Google Gemini for all Teachers &amp; Admins</small>
+                    </div>
+                </div>
+                <span class="ai-banner-tag">24/7 Active</span>
+            </div>
+
+            <!-- Segmented Switcher (Sign In / Sign Up) -->
+            <div class="auth-tabs" role="tablist">
+                <a class="auth-tab-link" asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl" role="tab" aria-selected="false">Sign In</a>
+                <a class="auth-tab-link active" asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" role="tab" aria-selected="true">Sign Up</a>
+            </div>
+
+            @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
+            {
+                <div class="auth-alert auth-alert-danger" role="alert">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                    <div>
+                        @foreach (var error in ViewData.ModelState[string.Empty]!.Errors)
+                        {
+                            <div>@error.ErrorMessage</div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <form id="registerForm" method="post" class="auth-form" asp-route-returnUrl="@Model.ReturnUrl">
+                <!-- Email Field -->
+                <div class="auth-field">
+                    <label asp-for="Input.Email">Email Address <span class="required">*</span></label>
+                    <div class="auth-input-wrapper">
+                        <span class="auth-input-icon">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="20" height="16" x="2" y="4" rx="2" />
+                                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                            </svg>
+                        </span>
+                        <input asp-for="Input.Email" class="auth-input" placeholder="Enter your email address" autocomplete="username" aria-required="true" />
+                    </div>
+                    <span asp-validation-for="Input.Email" class="auth-val-msg"></span>
+                </div>
+
+                <!-- Password Field -->
+                <div class="auth-field">
+                    <label asp-for="Input.Password">Password <span class="required">*</span></label>
+                    <div class="auth-input-wrapper">
+                        <span class="auth-input-icon">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                        </span>
+                        <input asp-for="Input.Password" class="auth-input" id="registerPassword" type="password" placeholder="Create a password (min. 6 chars)" autocomplete="new-password" aria-required="true" />
+                        <button type="button" class="auth-toggle-pwd" id="toggleRegPwdBtn" aria-label="Toggle password visibility">
+                            <svg id="eyeRegIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Input.Password" class="auth-val-msg"></span>
+                </div>
+
+                <!-- Confirm Password Field -->
+                <div class="auth-field">
+                    <label asp-for="Input.ConfirmPassword">Confirm Password <span class="required">*</span></label>
+                    <div class="auth-input-wrapper">
+                        <span class="auth-input-icon">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                        </span>
+                        <input asp-for="Input.ConfirmPassword" class="auth-input" id="confirmPassword" type="password" placeholder="Confirm your password" autocomplete="new-password" aria-required="true" />
+                        <button type="button" class="auth-toggle-pwd" id="toggleConfirmPwdBtn" aria-label="Toggle password visibility">
+                            <svg id="eyeConfirmIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Input.ConfirmPassword" class="auth-val-msg"></span>
+                </div>
+
+                <!-- Role Note -->
+                <div class="d-flex align-items-center justify-content-between mb-3" style="font-size: 12px; color: #64748b;">
+                    <span>Default Assigned Role:</span>
+                    <span style="background: #f0fdfa; color: #0d9488; font-weight: 700; padding: 2px 8px; border-radius: 6px; border: 1px solid #ccfbf1;">
+                        🎓 Teacher
+                    </span>
+                </div>
+
+                <!-- Submit Button -->
+                <button id="registerSubmit" type="submit" class="auth-btn-primary">
+                    <span>Sign Up</span>
+                </button>
+
+                <!-- Divider -->
+                <div class="auth-divider">
+                    <span>Or continue with</span>
+                </div>
+
+                <!-- Social Icons -->
+                <div class="auth-social-row">
+                    <button type="button" class="auth-social-btn" title="Sign up with Google" onclick="handleSocialClick('Google')">
+                        <svg width="18" height="18" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+                            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+                            <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+                            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="auth-social-btn" title="Sign up with Apple" onclick="handleSocialClick('Apple')">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.63-.78 1.06-1.85.94-2.93-.93.04-2.02.63-2.67 1.4-.58.67-1.08 1.77-.94 2.83 1.03.08 2.06-.54 2.67-1.3"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="auth-social-btn" title="Sign up with Facebook" onclick="handleSocialClick('Facebook')">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="auth-social-btn" title="Sign up with X" onclick="handleSocialClick('X')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Hidden form for social authentication -->
+                <form id="socialLoginForm" method="post" asp-page-handler="SocialLogin">
+                    <input type="hidden" name="provider" id="socialProviderInput" value="Google" />
+                    <input type="hidden" name="email" id="socialEmailInput" value="" />
+                    <input type="hidden" name="name" id="socialNameInput" value="" />
+                    <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
+                </form>
+            </form>
+        </div>
+
+        <!-- Footer -->
+        <div class="auth-footer">
+            <span>Copyright : EduBoost, All Right Reserved</span>
+            <div class="auth-footer-links">
+                <a href="#" class="auth-footer-link">Term & Condition</a>
+                <span>|</span>
+                <a href="#" class="auth-footer-link">Privacy & Policy</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Showcase Feature Panel -->
+    <div class="auth-showcase-column">
+        <div class="showcase-glow" aria-hidden="true"></div>
+
+        <!-- Floating UI Analytics Cards -->
+        <div class="showcase-cards-container">
+            <!-- Card 1: Performance Analytics (Donut) -->
+            <div class="showcase-card showcase-card-analytics">
+                <div class="sc-header">
+                    <span class="sc-title">Performance Plan</span>
+                    <span class="sc-badge">Live</span>
+                </div>
+                <div class="sc-body-donut">
+                    <div class="sc-donut-ring">
+                        <svg class="sc-donut-svg" viewBox="0 0 36 36">
+                            <circle cx="18" cy="18" r="14" fill="none" stroke="#f1f5f9" stroke-width="4.5" />
+                            <circle cx="18" cy="18" r="14" fill="none" stroke="#0d9488" stroke-width="4.5" stroke-dasharray="68 100" stroke-linecap="round" />
+                            <circle cx="18" cy="18" r="14" fill="none" stroke="#f59e0b" stroke-width="4.5" stroke-dasharray="20 100" stroke-dashoffset="-68" stroke-linecap="round" />
+                        </svg>
+                        <div class="sc-donut-val">82%</div>
+                    </div>
+                    <div class="sc-donut-legend">
+                        <div><span class="sc-legend-dot teal"></span>Target Met</div>
+                        <div><span class="sc-legend-dot amber"></span>Remedial</div>
+                    </div>
+                </div>
+                <button type="button" class="sc-btn-sm">Explore Analytics</button>
+            </div>
+
+            <!-- Card 2: Risk Diagnostic Allocations -->
+            <div class="showcase-card showcase-card-risk">
+                <div class="sc-header">
+                    <span class="sc-title">Risk Diagnostic Engine</span>
+                    <span class="sc-stat-trend">⚡ Active</span>
+                </div>
+                <div class="sc-stat-big">
+                    <span>3 Students</span>
+                    <span class="sc-stat-trend">+12% Rec</span>
+                </div>
+                <div class="sc-mini-list">
+                    <div class="sc-mini-row">
+                        <span class="sc-mini-name">Sarah Jenkins (9-A)</span>
+                        <span class="sc-mini-flag danger">Risk 62%</span>
+                    </div>
+                    <div class="sc-mini-row">
+                        <span class="sc-mini-name">Alex Rivera (9-B)</span>
+                        <span class="sc-mini-flag warning">Risk 48%</span>
+                    </div>
+                    <div class="sc-mini-row">
+                        <span class="sc-mini-name">Maya Patel (10-A)</span>
+                        <span class="sc-mini-flag success">Resolved</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Remedial Plan Goal -->
+            <div class="showcase-card showcase-card-plan">
+                <div class="sc-header">
+                    <span class="sc-title">Remedial Plans</span>
+                </div>
+                <div class="sc-plan-num">14 Active</div>
+                <div class="sc-plan-sub">Due date : Nov 30, 2026</div>
+                <div class="sc-progress-bar">
+                    <div class="sc-progress-fill" style="width: 78%;"></div>
+                </div>
+            </div>
+
+            <!-- Card 4: 24/7 AI Co-Pilot Assistant -->
+            <div class="showcase-card showcase-card-ai">
+                <div class="sc-header">
+                    <span class="sc-title" style="display: flex; align-items: center; gap: 4px; font-weight: 700;">
+                        <span style="color: #2563eb;">✨</span> 24/7 AI Co-Pilot
+                    </span>
+                    <span class="sc-badge-ai">
+                        <span class="sc-pulse-dot"></span> Online
+                    </span>
+                </div>
+                <div class="sc-ai-prompt">
+                    <div class="sc-ai-bubble-user">&ldquo;Suggest remedial methods for Math...&rdquo;</div>
+                    <div class="sc-ai-bubble-bot">
+                        <span class="sc-bot-sparkle">✨</span>
+                        <span>Gemini: &ldquo;Peer tutoring &amp; visual stations ready!&rdquo;</span>
+                    </div>
+                </div>
+                <div class="sc-ai-footer">
+                    <span>Powered by Google Gemini</span>
+                    <span class="badge-tag">24/7 Support</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lower Content Section -->
+        <div class="showcase-footer-content">
+            <!-- Stylized Brand Badge -->
+            <div class="showcase-badge-logo">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>
+            </div>
+
+            <h2 class="showcase-headline">A Unified Hub for Smarter Educational Decision-Making</h2>
+            <p class="showcase-description">
+                EduBoost empowers educators with a unified diagnostic center—delivering deep insights and a 360° view of student learning patterns and remedial interventions.
+            </p>
+
+            <!-- Slider Indicator Bars -->
+            <div class="showcase-slider-bars">
+                <div class="showcase-bar active" onclick="switchSlide(0)"></div>
+                <div class="showcase-bar" onclick="switchSlide(1)"></div>
+                <div class="showcase-bar" onclick="switchSlide(2)"></div>
+                <div class="showcase-bar" onclick="switchSlide(3)"></div>
+                <div class="showcase-bar" onclick="switchSlide(4)"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Social Authentication Modal Overlay -->
+<div class="social-modal-overlay" id="socialAuthModalOverlay" onclick="handleOverlayClick(event)">
+    <div class="social-modal-card">
+        <div class="social-modal-header">
+            <div class="social-modal-header-left">
+                <div class="social-modal-logo-icon" id="socialModalLogo"></div>
+                <div>
+                    <h3 class="social-modal-title" id="socialModalTitle">Sign up with Google</h3>
+                    <p class="social-modal-subtitle">to create account on <strong>EduBoost</strong></p>
+                </div>
+            </div>
+            <button type="button" class="social-modal-close-btn" onclick="closeSocialModal()" aria-label="Close modal">&times;</button>
+        </div>
+
+        <div class="social-modal-body">
+            <!-- 1-Click Fast Profile Card -->
+            <div class="social-account-card">
+                <div class="social-account-info">
+                    <img id="socialModalAvatar" src="/images/social/google-avatar.png" class="social-account-avatar" alt="Avatar" />
+                    <div>
+                        <div class="social-account-name" id="socialModalDisplayName">Alex Morgan</div>
+                        <div class="social-account-email" id="socialModalDisplayEmail">alex.google@eduboost.local</div>
+                    </div>
+                </div>
+                <span class="social-verified-tag">● Verified</span>
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding: 10px 14px; border-radius: 12px; background: #f0fdfa; border: 1px solid #ccfbf1; font-size: 12px; color: #0d9488;">
+                <span>Assigned Role:</span>
+                <strong style="font-weight: 700;">🎓 Teacher</strong>
+            </div>
+
+            <!-- Primary 1-Click Button -->
+            <button type="button" class="social-submit-btn" id="socialModalPrimaryBtn" onclick="submitSocialLogin(false)">
+                <span id="socialModalPrimaryBtnText">Sign up as Alex Morgan</span>
+            </button>
+
+            <!-- Custom Email Toggle Button -->
+            <button type="button" class="social-custom-toggle-btn" id="socialCustomToggleBtn" onclick="toggleCustomSocialForm()">
+                ⚙️ Or register with custom email &rarr;
+            </button>
+
+            <!-- Expandable Custom Email Form -->
+            <div class="social-custom-box" id="socialCustomBox">
+                <label class="social-custom-label">Full Name</label>
+                <input type="text" class="social-custom-input" id="customSocialNameInput" placeholder="e.g. John Doe" />
+
+                <label class="social-custom-label">Account Email</label>
+                <input type="email" class="social-custom-input" id="customSocialEmailInput" placeholder="name@domain.com" />
+
+                <button type="button" class="social-custom-submit-btn" onclick="submitSocialLogin(true)">
+                    Continue with custom email
+                </button>
+            </div>
+
+            <div class="social-modal-footer">
+                <span>🔒 Secured via OAuth 2.0 &bull; Direct access to EduBoost Workspace</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function setupToggle(btnId, inputId, iconId) {
+            const btn = document.getElementById(btnId);
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (btn && input && icon) {
+                btn.addEventListener('click', function () {
+                    const isPassword = input.type === 'password';
+                    input.type = isPassword ? 'text' : 'password';
+                    icon.innerHTML = isPassword 
+                        ? '<path d="m2 2 20 20"/><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>'
+                        : '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" />';
+                });
+            }
+        }
+        setupToggle('toggleRegPwdBtn', 'registerPassword', 'eyeRegIcon');
+        setupToggle('toggleConfirmPwdBtn', 'confirmPassword', 'eyeConfirmIcon');
+
+        // Carousel slides
+        const slides = [
+            {
+                title: "A Unified Hub for Smarter Educational Decision-Making",
+                desc: "EduBoost empowers educators with a unified diagnostic center—delivering deep insights and a 360° view of student learning patterns and remedial interventions."
+            },
+            {
+                title: "Weighted Risk Engine for Early Intervention",
+                desc: "Automatically assess attendance, grade trajectories, and assessment scores to detect slow learners before they fall behind."
+            },
+            {
+                title: "Innovative Methods & VARK Learning Styles",
+                desc: "Match remedial strategies to Visual, Auditory, Reading, or Kinesthetic learning modalities for personalized student growth."
+            },
+            {
+                title: "AI-Assisted Remedial Action Planning",
+                desc: "Generate targeted multi-week remedial agendas and monitor post-intervention test score improvements in real time."
+            },
+            {
+                title: "24/7 AI Teaching Assistant Powered by Google Gemini",
+                desc: "Get round-the-clock pedagogical advice, automatic lesson adaptations for slow learners, and personalized remedial strategies 24/7 inside your workspace."
+            }
+        ];
+
+        function switchSlide(idx) {
+            const headline = document.querySelector('.showcase-headline');
+            const desc = document.querySelector('.showcase-description');
+            const bars = document.querySelectorAll('.showcase-bar');
+
+            bars.forEach((b, i) => b.classList.toggle('active', i === idx));
+            if (headline && desc && slides[idx]) {
+                headline.style.opacity = '0';
+                desc.style.opacity = '0';
+                setTimeout(() => {
+                    headline.textContent = slides[idx].title;
+                    desc.textContent = slides[idx].desc;
+                    headline.style.opacity = '1';
+                    desc.style.opacity = '1';
+                }, 200);
+            }
+        }
+
+        let currentSlide = 0;
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % slides.length;
+            switchSlide(currentSlide);
+        }, 5000);
+
+        // Social Authentication Providers Configuration
+        const SOCIAL_PROVIDERS = {
+            Google: {
+                title: "Sign up with Google",
+                name: "Alex Morgan",
+                email: "alex.google@eduboost.local",
+                avatar: "/images/social/google-avatar.png",
+                btnStyle: "background: #4285F4; border-color: #4285F4; color: white;",
+                logoSvg: `<svg width="22" height="22" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>`
+            },
+            Apple: {
+                title: "Sign up with Apple",
+                name: "Alex Morgan",
+                email: "alex.apple@eduboost.local",
+                avatar: "/images/social/apple-avatar.png",
+                btnStyle: "background: #000000; border-color: #000000; color: white;",
+                logoSvg: `<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.63-.78 1.06-1.85.94-2.93-.93.04-2.02.63-2.67 1.4-.58.67-1.08 1.77-.94 2.83 1.03.08 2.06-.54 2.67-1.3"/></svg>`
+            },
+            Facebook: {
+                title: "Sign up with Facebook",
+                name: "Alex Morgan",
+                email: "alex.facebook@eduboost.local",
+                avatar: "/images/social/facebook-avatar.png",
+                btnStyle: "background: #1877F2; border-color: #1877F2; color: white;",
+                logoSvg: `<svg width="22" height="22" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`
+            },
+            X: {
+                title: "Authorize via X",
+                name: "Alex Morgan",
+                email: "alex.x@eduboost.local",
+                avatar: "/images/social/x-avatar.png",
+                btnStyle: "background: #000000; border-color: #000000; color: white;",
+                logoSvg: `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`
+            }
+        };
+
+        let currentSocialProvider = 'Google';
+
+        function handleSocialClick(provider) {
+            currentSocialProvider = provider;
+            const config = SOCIAL_PROVIDERS[provider] || SOCIAL_PROVIDERS.Google;
+            
+            document.getElementById('socialModalTitle').textContent = config.title;
+            document.getElementById('socialModalLogo').innerHTML = config.logoSvg;
+            document.getElementById('socialModalDisplayName').textContent = config.name;
+            document.getElementById('socialModalDisplayEmail').textContent = config.email;
+            document.getElementById('socialModalAvatar').src = config.avatar;
+            
+            const btn = document.getElementById('socialModalPrimaryBtn');
+            btn.setAttribute('style', config.btnStyle);
+            document.getElementById('socialModalPrimaryBtnText').textContent = `Sign up as ${config.name}`;
+            
+            document.getElementById('customSocialEmailInput').value = config.email;
+            document.getElementById('customSocialNameInput').value = config.name;
+            document.getElementById('socialCustomBox').classList.remove('active');
+
+            const overlay = document.getElementById('socialAuthModalOverlay');
+            overlay.classList.add('active');
+        }
+
+        function closeSocialModal() {
+            const overlay = document.getElementById('socialAuthModalOverlay');
+            if (overlay) overlay.classList.remove('active');
+        }
+
+        function handleOverlayClick(e) {
+            if (e.target && e.target.id === 'socialAuthModalOverlay') {
+                closeSocialModal();
+            }
+        }
+
+        function toggleCustomSocialForm() {
+            const box = document.getElementById('socialCustomBox');
+            if (box) box.classList.toggle('active');
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeSocialModal();
+        });
+
+        function submitSocialLogin(isCustom) {
+            const config = SOCIAL_PROVIDERS[currentSocialProvider] || SOCIAL_PROVIDERS.Google;
+            document.getElementById('socialProviderInput').value = currentSocialProvider;
+            
+            if (isCustom) {
+                const customEmail = document.getElementById('customSocialEmailInput').value.trim();
+                const customName = document.getElementById('customSocialNameInput').value.trim();
+                document.getElementById('socialEmailInput').value = customEmail || config.email;
+                document.getElementById('socialNameInput').value = customName || config.name;
+            } else {
+                document.getElementById('socialEmailInput').value = config.email;
+                document.getElementById('socialNameInput').value = config.name;
+            }
+
+            document.getElementById('socialLoginForm').submit();
+        }
+    </script>
+}

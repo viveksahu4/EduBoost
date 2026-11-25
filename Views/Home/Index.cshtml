@@ -1,0 +1,284 @@
+﻿@{
+    ViewData["Title"] = "Home — EduBoost Learning Analytics";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+}
+
+<!-- ==========================================================================
+     01. Hero Section with Modern Ambient Mesh & Floating Analytics Card
+     ========================================================================== -->
+<section class="home-hero-section">
+    <div class="row align-items-center g-4 home-hero-content">
+        <div class="col-lg-7">
+            <!-- Feature Announcement Pill -->
+            <div class="hero-pill-badge">
+                <span class="hero-pulse-dot"></span>
+                <span>Next-Gen Learning Analytics &middot; Powered by Google Gemini AI</span>
+            </div>
+
+            <h1 class="hero-title">
+                Empowering Educators with <br />
+                <span class="hero-gradient-text">Intelligent Remedial Analytics</span>
+            </h1>
+
+            <p class="hero-description">
+                Identify slow learners from multi-dimensional assessment metrics, build personalized
+                4-week recovery plans, and boost academic achievement with VARK-tailored innovative methods.
+            </p>
+
+            <div class="hero-action-group">
+                <a class="btn-hero-primary" asp-controller="Dashboard" asp-action="Index">
+                    <span>Open Dashboard</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </a>
+
+                @if (!(User.Identity?.IsAuthenticated ?? false))
+                {
+                    <a class="btn-hero-secondary" asp-area="Identity" asp-page="/Account/Register">
+                        <span>Create Account</span>
+                    </a>
+                }
+                else
+                {
+                    <a class="btn-hero-secondary" asp-controller="SlowLearners" asp-action="Index">
+                        <span>View At-Risk Students</span>
+                    </a>
+                }
+
+                <!-- Quick AI Chatbot trigger -->
+                <button type="button" class="btn-hero-secondary" onclick="openChatbotFromHero()" title="Ask our 24/7 AI Assistant">
+                    <span>✨ Ask 24/7 AI</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Right Side: 3D Floating Educational Analytics Card -->
+        <div class="col-lg-5">
+            <div class="hero-visual-card">
+                <div class="visual-header">
+                    <div class="visual-avatar-row">
+                        <div class="visual-avatar">🎓</div>
+                        <div class="visual-meta">
+                            <h6>Sarah Jenkins</h6>
+                            <span>Class 9-A &middot; Roll #S01</span>
+                        </div>
+                    </div>
+                    <span class="visual-badge-live">
+                        <span class="sc-pulse-dot"></span> Live
+                    </span>
+                </div>
+
+                <div class="visual-score-box">
+                    <div class="score-row">
+                        <span>Remedial Plan Target</span>
+                        <span class="score-num">82% Recovered</span>
+                    </div>
+                    <div class="visual-progress">
+                        <div class="visual-progress-bar"></div>
+                    </div>
+                </div>
+
+                <div class="visual-chip-grid">
+                    <div class="visual-chip-item">
+                        <span>VARK Learning Style</span>
+                        <span class="chip-status resolved">Kinesthetic 🔬</span>
+                    </div>
+                    <div class="visual-chip-item">
+                        <span>Risk Score Evaluation</span>
+                        <span class="chip-status resolved">18% (Low Risk)</span>
+                    </div>
+                    <div class="visual-chip-item">
+                        <span>AI Assistant Recommendation</span>
+                        <span class="chip-status gemini">✨ Peer Tutoring Active</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================================================
+     02. Quick Interactive Demo Accounts Bar (One-Click Copy)
+     ========================================================================== -->
+@if (!(User.Identity?.IsAuthenticated ?? false))
+{
+    <div class="demo-accounts-card">
+        <div class="demo-title-group">
+            <div class="demo-title-icon">⚡</div>
+            <div>
+                <h6>Quick Demo Access</h6>
+                <span>Click any credential to copy and sign in instantly</span>
+            </div>
+        </div>
+
+        <div class="demo-chips-group">
+            <div class="quick-copy-chip" onclick="copyCredential('admin@eduboost.local', 'Admin Email copied!')">
+                <span class="chip-role-badge">Admin</span>
+                <span>admin@eduboost.local</span>
+                <span class="chip-copy-icon">📋</span>
+            </div>
+
+            <div class="quick-copy-chip" onclick="copyCredential('teacher@eduboost.local', 'Teacher Email copied!')">
+                <span class="chip-role-badge" style="background:#059669;">Teacher</span>
+                <span>teacher@eduboost.local</span>
+                <span class="chip-copy-icon">📋</span>
+            </div>
+
+            <div class="quick-copy-chip" onclick="copyCredential('Admin@123', 'Password copied!')">
+                <span class="chip-role-badge" style="background:#6366f1;">Pass</span>
+                <span>Admin@123 / Teacher@123</span>
+                <span class="chip-copy-icon">🔑</span>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- ==========================================================================
+     03. Bento Grid: Core Capabilities with Dynamic Hover Micro-interactions
+     ========================================================================== -->
+<div class="bento-section-header">
+    <span class="section-tag">Core Capabilities</span>
+    <h2>Built for Intelligent Academic Intervention</h2>
+</div>
+
+<div class="bento-grid">
+    <!-- Card 1: Risk Detection -->
+    <div class="bento-card card-risk">
+        <div class="bento-icon-wrapper icon-risk">
+            📐
+        </div>
+        <div>
+            <h3 class="bento-title">Multi-Factor Risk Engine</h3>
+            <p class="bento-desc">
+                Combines <strong>60% Marks Deficiency</strong>, <strong>25% Attendance Deficiency</strong>, and
+                <strong>15% Declining Trend Score</strong> to spot at-risk students before they fall behind.
+            </p>
+        </div>
+        <div class="bento-badge-tag">
+            <span>Threshold: Avg &lt; 40% or Risk &ge; 45</span>
+        </div>
+    </div>
+
+    <!-- Card 2: AI Remedial Plans -->
+    <div class="bento-card card-ai">
+        <div class="bento-icon-wrapper icon-ai">
+            ✨
+        </div>
+        <div>
+            <h3 class="bento-title">Google Gemini AI Plans</h3>
+            <p class="bento-desc">
+                Automatically generate personalized 4-week remedial roadmaps tailored to the student's weak subject,
+                attendance frequency, and specific VARK learning style.
+            </p>
+        </div>
+        <div class="bento-badge-tag">
+            <span>24/7 AI Co-Pilot &middot; Gemini 3.5</span>
+        </div>
+    </div>
+
+    <!-- Card 3: Progress Tracking -->
+    <div class="bento-card card-tracking">
+        <div class="bento-icon-wrapper icon-track">
+            📈
+        </div>
+        <div>
+            <h3 class="bento-title">Pre &amp; Post Progress Tracking</h3>
+            <p class="bento-desc">
+                Record score improvements after remedial interventions, compare pre/post-test marks, and calculate
+                recovery delta to mark interventions as completed.
+            </p>
+        </div>
+        <div class="bento-badge-tag">
+            <span>Visual Improvement Badges &amp; Metrics</span>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     04. Platform Architecture Showcase (What is inside)
+     ========================================================================== -->
+<div class="architecture-card">
+    <div class="arch-header">
+        <div>
+            <h3>What is Inside the Platform</h3>
+            <small class="text-muted">Comprehensive suite of tools built for modern educators</small>
+        </div>
+        <span class="badge bg-primary-subtle text-primary fw-bold px-3 py-2 rounded-pill">
+            Full-Stack .NET 10
+        </span>
+    </div>
+
+    <div class="arch-grid">
+        <div class="arch-item">
+            <div class="arch-item-icon">👥</div>
+            <div class="arch-item-text">
+                <h5>Student &amp; Assessment Engine</h5>
+                <p>Complete student management, roll numbers, classes, multi-subject assessments, and percentage scoring validations.</p>
+            </div>
+        </div>
+
+        <div class="arch-item">
+            <div class="arch-item-icon">🧠</div>
+            <div class="arch-item-text">
+                <h5>VARK Learning Style Diagnostic</h5>
+                <p>Interactive student quiz engine to diagnose Visual, Auditory, Reading/Writing, or Kinesthetic learning preferences.</p>
+            </div>
+        </div>
+
+        <div class="arch-item">
+            <div class="arch-item-icon">💡</div>
+            <div class="arch-item-text">
+                <h5>Innovative Methods Catalog</h5>
+                <p>Curated evidence-based pedagogical strategies: Peer Tutoring, Mind Mapping, Gamified Quizzes, and Spaced Repetition.</p>
+            </div>
+        </div>
+
+        <div class="arch-item">
+            <div class="arch-item-icon">⚡</div>
+            <div class="arch-item-text">
+                <h5>REST API &amp; Swagger Hub</h5>
+                <p>Modern REST API at <code>/api/students</code> and <code>/api/chatbot</code> with full OpenAPI/Swagger documentation.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Copy Toast -->
+<div id="copyToast" class="copy-toast">
+    <span>✓</span>
+    <span id="copyToastText">Copied to clipboard!</span>
+</div>
+
+@section Scripts {
+    <script>
+        function copyCredential(text, message) {
+            navigator.clipboard.writeText(text).then(function() {
+                var toast = document.getElementById('copyToast');
+                var textEl = document.getElementById('copyToastText');
+                if (toast && textEl) {
+                    textEl.textContent = message || 'Copied to clipboard!';
+                    toast.classList.add('show');
+                    setTimeout(function() {
+                        toast.classList.remove('show');
+                    }, 2200);
+                }
+            }).catch(function() {
+                alert('Copied: ' + text);
+            });
+        }
+
+        function openChatbotFromHero() {
+            var btn = document.getElementById('chatLauncherBtn');
+            if (btn) {
+                btn.click();
+            } else {
+                window.location.href = '/Dashboard/Index';
+            }
+        }
+    </script>
+}

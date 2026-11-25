@@ -1,0 +1,673 @@
+@page
+@model EduBoost.Areas.Identity.Pages.Account.Manage.IndexModel
+@{
+    ViewData["Title"] = "Profile & Account";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<div class="profile-container mb-5">
+    <!-- Status Message Alert -->
+    @if (!string.IsNullOrEmpty(Model.StatusMessage))
+    {
+        var alertClass = Model.StatusType == "danger" ? "alert-danger" : "alert-success";
+        <div class="alert @alertClass alert-dismissible fade show rounded-4 shadow-sm mb-4" role="alert">
+            <div class="d-flex align-items-center gap-2">
+                @if (Model.StatusType == "danger")
+                {
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                }
+                else
+                {
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                        <polyline points="22 4 12 14.01 9 11.01" />
+                    </svg>
+                }
+                <span>@Model.StatusMessage</span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Top Profile Banner Card -->
+    <div class="card profile-header-card mb-4 border-0 shadow-sm">
+        <div class="profile-cover-gradient"></div>
+        <div class="card-body p-4 pt-0">
+            <div class="d-flex flex-wrap align-items-end justify-content-between gap-3">
+                <div class="d-flex flex-wrap align-items-end gap-3" style="margin-top: -55px;">
+                    <!-- Avatar with Camera Trigger -->
+                    <div class="profile-avatar-wrapper" role="button" data-bs-toggle="modal" data-bs-target="#avatarUploadModal" title="Click to change profile picture">
+                        @if (!string.IsNullOrEmpty(Model.ProfilePicture))
+                        {
+                            <img src="@Model.ProfilePicture" alt="@Model.Username" class="profile-avatar-img shadow" id="mainHeaderAvatarImg" />
+                        }
+                        else
+                        {
+                            <div class="profile-avatar-initials shadow" id="mainHeaderAvatarInitials">
+                                @Model.DisplayInitials
+                            </div>
+                        }
+                        <button type="button" class="profile-avatar-badge" aria-label="Upload photo" data-bs-toggle="modal" data-bs-target="#avatarUploadModal">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                                <circle cx="12" cy="13" r="4" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- User Identity Details -->
+                    <div class="mb-1">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <h2 class="h4 fw-bold mb-0 text-dark-emphasis">@(string.IsNullOrWhiteSpace(Model.Input.FullName) ? Model.Username : Model.Input.FullName)</h2>
+                            <span class="badge" style="background: rgba(37, 99, 235, 0.12); color: #2563eb; font-weight: 700; padding: 4px 10px; border-radius: 8px;">
+                                @(Model.Role == "Admin" ? "🎓 Administrator" : "🧑‍🏫 Teacher")
+                            </span>
+                        </div>
+                        <p class="text-muted mb-0 small">
+                            <span>@Model.Email</span>
+                            <span class="mx-2">·</span>
+                            <span class="text-success fw-semibold">● Active Account</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <div class="mb-1">
+                    <button type="button" class="btn btn-outline-primary d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#avatarUploadModal">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="17 8 12 3 7 8" />
+                            <line x1="12" y1="3" x2="12" y2="15" />
+                        </svg>
+                        <span>Change Photo</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Settings Card with Modern Segmented Tabs -->
+    <div class="card border-0 shadow-sm profile-main-card">
+        <div class="card-body p-4 p-md-5">
+            <!-- Nav Tabs -->
+            <ul class="nav nav-pills profile-nav-pills mb-4" id="profileTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="general-tab" data-bs-toggle="pill" data-bs-target="#general" type="button" role="tab" aria-controls="general" aria-selected="true">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        Profile Information
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="security-tab" data-bs-toggle="pill" data-bs-target="#security" type="button" role="tab" aria-controls="security" aria-selected="false">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                            <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        Security & Password
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="account-tab" data-bs-toggle="pill" data-bs-target="#account" type="button" role="tab" aria-controls="account" aria-selected="false">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="16" x2="12" y2="12" />
+                            <line x1="12" y1="8" x2="12.01" y2="8" />
+                        </svg>
+                        Account Details
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="profileTabsContent">
+                <!-- Tab 1: Profile Information -->
+                <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+                    <div class="mb-4">
+                        <h3 class="h5 fw-bold mb-1">Personal Details</h3>
+                        <p class="text-muted small">Update your name, phone number, and institutional information.</p>
+                    </div>
+
+                    <form id="profileForm" method="post" enctype="multipart/form-data">
+                        <!-- Hidden avatar inputs that can be set by modal -->
+                        <input type="hidden" asp-for="Input.AvatarUrl" id="hiddenAvatarUrl" />
+                        <input type="hidden" asp-for="Input.RemoveAvatar" id="hiddenRemoveAvatar" value="false" />
+
+                        <div class="row g-4 mb-4">
+                            <!-- Full Name -->
+                            <div class="col-md-6">
+                                <label asp-for="Input.FullName" class="form-label fw-semibold" style="font-size: 13px;">
+                                    Full Name <span class="text-primary">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                            <circle cx="12" cy="7" r="4" />
+                                        </svg>
+                                    </span>
+                                    <input asp-for="Input.FullName" class="form-control border-start-0" placeholder="e.g. John Doe" />
+                                </div>
+                                <span asp-validation-for="Input.FullName" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Email Address (Read-only) -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" style="font-size: 13px;">
+                                    Email Address <span class="text-muted">(Account ID)</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect width="20" height="16" x="2" y="4" rx="2" />
+                                            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                                        </svg>
+                                    </span>
+                                    <input value="@Model.Email" class="form-control border-start-0 bg-light-subtle" readonly disabled />
+                                </div>
+                            </div>
+
+                            <!-- Phone Number -->
+                            <div class="col-md-6">
+                                <label asp-for="Input.PhoneNumber" class="form-label fw-semibold" style="font-size: 13px;">Phone Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                        </svg>
+                                    </span>
+                                    <input asp-for="Input.PhoneNumber" class="form-control border-start-0" placeholder="+1 (555) 000-0000" />
+                                </div>
+                                <span asp-validation-for="Input.PhoneNumber" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Department -->
+                            <div class="col-md-6">
+                                <label asp-for="Input.Department" class="form-label fw-semibold" style="font-size: 13px;">Role / Department</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                            <polyline points="9 22 9 12 15 12 15 22" />
+                                        </svg>
+                                    </span>
+                                    <input asp-for="Input.Department" class="form-control border-start-0" placeholder="e.g. Science & Remedial Teaching" />
+                                </div>
+                            </div>
+
+                            <!-- Bio / Notes -->
+                            <div class="col-12">
+                                <label asp-for="Input.Bio" class="form-label fw-semibold" style="font-size: 13px;">Bio / Professional Summary</label>
+                                <textarea asp-for="Input.Bio" rows="3" class="form-control" placeholder="Share your academic specialization, remedial teaching goals, or class responsibilities..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-3 pt-3 border-top">
+                            <button id="updateProfileBtn" type="submit" class="btn btn-primary px-4 py-2 fw-semibold">
+                                Save Profile Changes
+                            </button>
+                            <a href="/" class="btn btn-outline-secondary px-3 py-2">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Tab 2: Security & Password -->
+                <div class="tab-pane fade" id="security" role="tabpanel" aria-labelledby="security-tab">
+                    <div class="mb-4">
+                        <h3 class="h5 fw-bold mb-1">Change Password</h3>
+                        <p class="text-muted small">Keep your account secure with a strong password of at least 6 characters.</p>
+                    </div>
+
+                    <form id="changePasswordForm" method="post" asp-page-handler="ChangePassword">
+                        <div class="row g-4 mb-4" style="max-width: 600px;">
+                            <!-- Current Password -->
+                            <div class="col-12">
+                                <label asp-for="PasswordInput.CurrentPassword" class="form-label fw-semibold" style="font-size: 13px;">
+                                    Current Password <span class="text-primary">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                        </svg>
+                                    </span>
+                                    <input asp-for="PasswordInput.CurrentPassword" class="form-control border-start-0 border-end-0" id="currentPwdInput" type="password" placeholder="Enter your current password" />
+                                    <button class="btn btn-outline-secondary border-start-0" type="button" onclick="togglePasswordVisibility('currentPwdInput', 'eyeCurrent')">
+                                        <svg id="eyeCurrent" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                                            <circle cx="12" cy="12" r="3" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- New Password -->
+                            <div class="col-12">
+                                <label asp-for="PasswordInput.NewPassword" class="form-label fw-semibold" style="font-size: 13px;">
+                                    New Password <span class="text-primary">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                        </svg>
+                                    </span>
+                                    <input asp-for="PasswordInput.NewPassword" class="form-control border-start-0 border-end-0" id="newPwdInput" type="password" placeholder="Min. 6 characters" />
+                                    <button class="btn btn-outline-secondary border-start-0" type="button" onclick="togglePasswordVisibility('newPwdInput', 'eyeNew')">
+                                        <svg id="eyeNew" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                                            <circle cx="12" cy="12" r="3" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Confirm Password -->
+                            <div class="col-12">
+                                <label asp-for="PasswordInput.ConfirmPassword" class="form-label fw-semibold" style="font-size: 13px;">
+                                    Confirm New Password <span class="text-primary">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                        </svg>
+                                    </span>
+                                    <input asp-for="PasswordInput.ConfirmPassword" class="form-control border-start-0 border-end-0" id="confirmPwdInput" type="password" placeholder="Re-type new password" />
+                                    <button class="btn btn-outline-secondary border-start-0" type="button" onclick="togglePasswordVisibility('confirmPwdInput', 'eyeConfirm')">
+                                        <svg id="eyeConfirm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                                            <circle cx="12" cy="12" r="3" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-top">
+                            <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold">
+                                Update Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Tab 3: Account Details -->
+                <div class="tab-pane fade" id="account" role="tabpanel" aria-labelledby="account-tab">
+                    <div class="mb-4">
+                        <h3 class="h5 fw-bold mb-1">Account Metadata</h3>
+                        <p class="text-muted small">Diagnostic and permission information for this session.</p>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <tbody>
+                                <tr>
+                                    <td class="text-muted fw-semibold" style="width: 220px;">Role & Permissions</td>
+                                    <td>
+                                        <span class="badge" style="background: rgba(37, 99, 235, 0.12); color: #2563eb; font-weight: 700; padding: 5px 12px; border-radius: 8px;">
+                                            @(Model.Role == "Admin" ? "🎓 Administrator (Full System Access)" : "🧑‍🏫 Teacher (Assessment & Remedial Access)")
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted fw-semibold">Primary Email</td>
+                                    <td class="fw-medium">@Model.Email</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted fw-semibold">Account Status</td>
+                                    <td>
+                                        <span class="badge bg-success-subtle text-success fw-bold px-3 py-1">Active / Verified</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted fw-semibold">Authentication Engine</td>
+                                    <td>ASP.NET Core Identity · SQL Server LocalDB</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================================================
+     AVATAR UPLOAD MODAL (Upload from Device OR Google Drive / URL)
+     ========================================================================== -->
+<div class="modal fade" id="avatarUploadModal" tabindex="-1" aria-labelledby="avatarModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header border-bottom pb-3 pt-3 px-4">
+                <div>
+                    <h5 class="modal-title fw-bold" id="avatarModalLabel">Update Profile Photo</h5>
+                    <p class="text-muted mb-0 small">Select a photo from your computer or link from Google Drive.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form id="avatarUploadForm" method="post" enctype="multipart/form-data">
+                <div class="modal-body p-4">
+                    <!-- Segmented Source Switcher -->
+                    <div class="avatar-source-tabs d-flex p-1 bg-light rounded-3 mb-4">
+                        <button type="button" class="btn btn-sm flex-fill fw-semibold active-tab-btn" id="tabDeviceBtn" onclick="switchAvatarSource('device')">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                                <rect width="20" height="14" x="2" y="3" rx="2" />
+                                <line x1="8" y1="21" x2="16" y2="21" />
+                                <line x1="12" y1="17" x2="12" y2="21" />
+                            </svg>
+                            Upload from Device
+                        </button>
+                        <button type="button" class="btn btn-sm flex-fill fw-semibold text-muted" id="tabDriveBtn" onclick="switchAvatarSource('drive')">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                                <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+                            </svg>
+                            Google Drive / URL
+                        </button>
+                    </div>
+
+                    <!-- Option A: Upload from Device (File Input & Drag/Drop) -->
+                    <div id="sourceDeviceSection">
+                        <div class="avatar-dropzone p-4 text-center rounded-3 border-dashed" id="dropzoneBox" onclick="document.getElementById('deviceFileInput').click()">
+                            <input type="file" id="deviceFileInput" name="Input.AvatarFile" accept="image/png, image/jpeg, image/jpg, image/webp, image/gif" style="display: none;" onchange="handleDeviceFileSelect(event)" />
+                            
+                            <div class="mb-3">
+                                <span class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle" style="width: 52px; height: 52px;">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="17 8 12 3 7 8" />
+                                        <line x1="12" y1="3" x2="12" y2="15" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <h6 class="fw-bold mb-1">Click to browse your device</h6>
+                            <p class="text-muted small mb-0">PNG, JPG, WEBP, or GIF up to 5MB</p>
+                        </div>
+                    </div>
+
+                    <!-- Option B: Upload from Google Drive or Image URL -->
+                    <div id="sourceDriveSection" style="display: none;">
+                        <label class="form-label fw-semibold" style="font-size: 13px;">Google Drive Shareable Link or Public Image URL</label>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text bg-transparent border-end-0">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                                </svg>
+                            </span>
+                            <input type="url" class="form-control border-start-0" id="driveUrlInput" name="Input.AvatarUrl" placeholder="https://drive.google.com/file/d/... or https://..." oninput="handleDriveUrlInput()" />
+                        </div>
+                        <p class="text-muted small mb-0">
+                            💡 For Google Drive: Right-click your image in Google Drive → <em>Share</em> → Set to <em>"Anyone with the link can view"</em> and paste the link here.
+                        </p>
+                    </div>
+
+                    <!-- Preview Container in Modal -->
+                    <div id="modalPreviewSection" class="mt-4 text-center" style="display: none;">
+                        <div class="text-muted small fw-semibold mb-2">PHOTO PREVIEW</div>
+                        <div class="d-inline-block position-relative">
+                            <img id="modalPreviewImg" src="" alt="Selected Preview" class="rounded-circle shadow" style="width: 90px; height: 90px; object-fit: cover; border: 3px solid #ffffff;" />
+                        </div>
+                        <p class="text-muted small mt-2 mb-0" id="modalPreviewFilename"></p>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-top px-4 py-3 bg-light-subtle d-flex justify-content-between">
+                    @if (!string.IsNullOrEmpty(Model.ProfilePicture))
+                    {
+                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="triggerRemoveAvatar()">
+                            Remove Photo
+                        </button>
+                    }
+                    else
+                    {
+                        <span></span>
+                    }
+
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm px-3 fw-semibold" id="saveAvatarModalBtn">
+                            Save &amp; Apply Photo
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .profile-container {
+            max-width: 1040px;
+            margin: 0 auto;
+        }
+
+        .profile-header-card {
+            border-radius: 22px;
+            overflow: hidden;
+            background: var(--surface);
+        }
+
+        .profile-cover-gradient {
+            height: 110px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #38bdf8 100%);
+            opacity: 0.95;
+        }
+
+        .profile-avatar-wrapper {
+            position: relative;
+            width: 105px;
+            height: 105px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .profile-avatar-wrapper:hover {
+            transform: scale(1.03);
+        }
+
+        .profile-avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--surface);
+        }
+
+        .profile-avatar-initials {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 4px solid var(--surface);
+            background: linear-gradient(135deg, #2563eb, #0ea5e9);
+            color: #ffffff;
+            font-size: 2.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+
+        .profile-avatar-badge {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #2563eb;
+            color: #ffffff;
+            border: 2.5px solid var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+            transition: transform 0.15s ease, background-color 0.15s ease;
+        }
+
+        .profile-avatar-wrapper:hover .profile-avatar-badge {
+            transform: scale(1.1);
+            background-color: #1d4ed8;
+        }
+
+        .profile-main-card {
+            border-radius: 22px;
+            background: var(--surface);
+        }
+
+        .profile-nav-pills {
+            gap: 8px;
+            padding: 4px;
+            background: var(--surface-soft);
+            border-radius: 14px;
+            display: inline-flex;
+            width: auto;
+        }
+
+        .profile-nav-pills .nav-link {
+            border-radius: 10px;
+            padding: 8px 18px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--muted);
+            transition: all 0.2s ease;
+        }
+
+        .profile-nav-pills .nav-link:hover {
+            color: var(--text);
+        }
+
+        .profile-nav-pills .nav-link.active {
+            background: var(--surface);
+            color: var(--text);
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+        }
+
+        .avatar-source-tabs {
+            background: var(--surface-soft);
+            border: 1px solid var(--border);
+        }
+
+        .active-tab-btn {
+            background: var(--surface) !important;
+            color: var(--text) !important;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+        }
+
+        .avatar-dropzone {
+            border: 2px dashed var(--border);
+            background: var(--surface-soft);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .avatar-dropzone:hover {
+            border-color: #2563eb;
+            background: rgba(37, 99, 235, 0.04);
+            transform: translateY(-2px);
+        }
+    </style>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (!input || !icon) return;
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            icon.innerHTML = isPassword
+                ? '<path d="m2 2 20 20"/><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>'
+                : '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" />';
+        }
+
+        function switchAvatarSource(source) {
+            const deviceSec = document.getElementById('sourceDeviceSection');
+            const driveSec = document.getElementById('sourceDriveSection');
+            const btnDevice = document.getElementById('tabDeviceBtn');
+            const btnDrive = document.getElementById('tabDriveBtn');
+
+            if (source === 'device') {
+                deviceSec.style.display = 'block';
+                driveSec.style.display = 'none';
+                btnDevice.classList.add('active-tab-btn');
+                btnDevice.classList.remove('text-muted');
+                btnDrive.classList.remove('active-tab-btn');
+                btnDrive.classList.add('text-muted');
+            } else {
+                deviceSec.style.display = 'none';
+                driveSec.style.display = 'block';
+                btnDrive.classList.add('active-tab-btn');
+                btnDrive.classList.remove('text-muted');
+                btnDevice.classList.remove('active-tab-btn');
+                btnDevice.classList.add('text-muted');
+            }
+        }
+
+        function handleDeviceFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const previewSec = document.getElementById('modalPreviewSection');
+                const previewImg = document.getElementById('modalPreviewImg');
+                const filenameLbl = document.getElementById('modalPreviewFilename');
+
+                previewImg.src = e.target.result;
+                filenameLbl.textContent = file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
+                previewSec.style.display = 'block';
+
+                // Clear drive url input if device is selected
+                document.getElementById('driveUrlInput').value = '';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleDriveUrlInput() {
+            let url = document.getElementById('driveUrlInput').value.trim();
+            if (!url) return;
+
+            if (url.includes('drive.google.com/file/d/')) {
+                const fileId = url.split('/file/d/')[1].split('/')[0].split('?')[0];
+                url = 'https://lh3.googleusercontent.com/d/' + fileId;
+            }
+
+            const previewSec = document.getElementById('modalPreviewSection');
+            const previewImg = document.getElementById('modalPreviewImg');
+            const filenameLbl = document.getElementById('modalPreviewFilename');
+
+            previewImg.src = url;
+            filenameLbl.textContent = 'Cloud Image URL linked';
+            previewSec.style.display = 'block';
+
+            // Clear device input file if URL is provided
+            document.getElementById('deviceFileInput').value = '';
+        }
+
+        function triggerRemoveAvatar() {
+            if (confirm("Are you sure you want to remove your profile photo and reset to initials?")) {
+                const form = document.getElementById('profileForm');
+                document.getElementById('hiddenRemoveAvatar').value = 'true';
+                form.submit();
+            }
+        }
+    </script>
+}

@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="EduBoost.csproj" />
+  <Project Path="tests/EduBoost.Tests/EduBoost.Tests.csproj" />
+</Solution>

@@ -1,0 +1,26 @@
+@model EduBoost.Models.Subject
+@{
+    ViewData["Title"] = "Delete Subject";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Delete Subject</h1>
+    <a class="btn btn-outline-secondary" asp-action="Index">Back to list</a>
+</div>
+
+<div class="alert alert-danger">
+    Are you sure you want to delete <strong>@Model.Name</strong>?
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <p class="mb-1">Assessments under this subject: <strong>@Model.Assessments.Count</strong></p>
+        <p class="text-muted small">A subject with assessments cannot be deleted. Remove those assessments first.</p>
+
+        <form asp-action="Delete" method="post" class="mt-3">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger">Delete subject</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+        </form>
+    </div>
+</div>

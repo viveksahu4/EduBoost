@@ -1,0 +1,29 @@
+﻿@model EduBoost.Models.Assessment
+@{
+    ViewData["Title"] = "Delete Assessment";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Delete Assessment</h1>
+    <a class="btn btn-outline-secondary" asp-action="Index">Back to list</a>
+</div>
+
+<div class="alert alert-danger">Are you sure you want to delete this assessment?</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Student</dt><dd class="col-sm-9">@Model.Student?.FullName</dd>
+            <dt class="col-sm-3">Subject</dt><dd class="col-sm-9">@Model.Subject?.Name</dd>
+            <dt class="col-sm-3">Exam</dt><dd class="col-sm-9">@Model.ExamType</dd>
+            <dt class="col-sm-3">Date</dt><dd class="col-sm-9">@Model.ExamDate.ToString("dd MMM yyyy")</dd>
+            <dt class="col-sm-3">Marks</dt><dd class="col-sm-9">@Model.MarksObtained.ToString("0.#") / @Model.MaxMarks.ToString("0.#")</dd>
+        </dl>
+
+        <form asp-action="Delete" method="post" class="mt-4">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger">Delete assessment</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+        </form>
+    </div>
+</div>
