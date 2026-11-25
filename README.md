@@ -28,7 +28,7 @@ EduBoost is an ASP.NET Core MVC (.NET 10) platform built with Entity Framework C
 | Admin | `admin@eduboost.local` | `Admin@123` |
 | Teacher | `teacher@eduboost.local` | `Teacher@123` |
 
-New self-registered accounts receive the **Teacher** role. Admin sees the **Subjects** administration menu and Admin-only method management actions.
+New self-registered accounts receive the **Teacher** role. Admin sees the **Subjects** administration menu and Admin-only method management actions..
 
 ## Features
 
